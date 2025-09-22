@@ -2807,3 +2807,76 @@ section,
     padding: 1.5rem;
   }
 }
+
+/* Enhanced Social Links */
+.social-link-enhanced {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 1.5rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.social-link-enhanced:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.social-link-enhanced:hover:before {
+  left: 100%;
+}
+
+.social-link-enhanced:hover {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+
+/* Facebook */
+.social-link-enhanced.facebook {
+  background: linear-gradient(135deg, #1877f2, #42a5f5);
+}
+
+.social-link-enhanced.facebook:hover {
+  background: linear-gradient(135deg, #0d5bb8, #1976d2);
+}
+
+/* Instagram */
+.social-link-enhanced.instagram {
+  background: linear-gradient(135deg, #e4405f, #f77737, #ffdc80);
+}
+
+.social-link-enhanced.instagram:hover {
+  background: linear-gradient(135deg, #c13584, #e1306c, #fd5949);
+}
+
+/* TikTok */
+.social-link-enhanced.tiktok {
+  background: linear-gradient(135deg, #000000, #ff0050);
+}
+
+.social-link-enhanced.tiktok:hover {
+  background: linear-gradient(135deg, #333333, #ff2d72);
+}
+
+@media (max-width: 768px) {
+  .social-link-enhanced {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+}
