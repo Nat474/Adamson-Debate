@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Supabase Test Page - Adamson Debate Society</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="h3 mb-0">
+                            <i class="bi bi-database-check"></i>
+                            Supabase Integration Test
+                        </h1>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Connection Status -->
+                        <div class="alert alert-info" id="connection-status">
+                            <i class="bi bi-clock"></i> Checking Supabase connection...
+                        </div>
+
+                        <!-- Test Buttons -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-primary w-100" onclick="testConnection()">
+                                    <i class="bi bi-wifi"></i> Test Connection
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-success w-100" onclick="testNewsLoad()">
+                                    <i class="bi bi-newspaper"></i> Test News Loading
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-info w-100" onclick="testEventsLoad()">
+                                    <i class="bi bi-calendar-event"></i> Test Events Loading
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-warning w-100" onclick="testContactSubmit()">
+                                    <i class="bi bi-envelope"></i> Test Contact Form
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Add Forms -->
+                        <div class="row">
+                            <!-- Add News Form -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Add Test News</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="test-news-form">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" id="news-title" placeholder="News Title" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <textarea class="form-control" id="news-content" rows="3" placeholder="News Content" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" id="news-author" placeholder="Author Name" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100">Add News</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add Event Form -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Add Test Event</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="test-event-form">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" id="event-title" placeholder="Event Title" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <textarea class="form-control" id="event-description" rows="2" placeholder="Event Description" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input type="datetime-local" class="form-control" id="event-date" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" id="event-organizer" placeholder="Organizer Name" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-success w-100">Add Event</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Display -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Test Results</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="test-results" style="max-height: 400px; overflow-y: auto;">
+                                    <p class="text-muted">Test results will appear here...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Database Tables Status -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Database Tables Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="tables-status">
+                            <p class="text-muted">Loading table information...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Supabase Configuration -->
+    <script src="config/supabase.js"></script>
+
+    <script>
+        // Test functions
+        async function testConnection() {
+            logResult('Testing Supabase connection...', 'info');
+
+            try {
+                if (typeof supabaseClient === 'undefined') {
+                    throw new Error('Supabase client not initialized');
+                }
+
+                // Test basic connection by trying to fetch from a system table
+                const { data, error } = await supabaseClient
+                    .from('system_settings')
+                    .select('setting_key, setting_value')
+                    .limit(1);
+
+                if (error) {
+                    throw error;
+                }
+
+                logResult('✅ Supabase connection successful!', 'success');
+                updateConnectionStatus('Connected', 'success');
+
+                return true;
+            } catch (error) {
+                logResult('❌ Connection failed: ' + error.message, 'danger');
+                updateConnectionStatus('Connection Failed', 'danger');
+                return false;
+            }
+        }
+
+        async function testNewsLoad() {
+            logResult('Testing news loading...', 'info');
+
+            try {
+                const news = await debateDB.getNews(5, true);
+                logResult(`✅ Successfully loaded ${news.length} news articles`, 'success');
+
+                if (news.length > 0) {
+                    logResult('Sample news:', 'info');
+                    news.forEach((article, index) => {
+                        logResult(`${index + 1}. ${article.title} by ${article.author_name}`, 'secondary');
+                    });
+                } else {
+                    logResult('ℹ️ No news articles found. Add some sample data first.', 'warning');
+                }
+            } catch (error) {
+                logResult('❌ News loading failed: ' + error.message, 'danger');
+            }
+        }
+
+        async function testEventsLoad() {
+            logResult('Testing events loading...', 'info');
+
+            try {
+                const events = await debateDB.getEvents(true, 5);
+                logResult(`✅ Successfully loaded ${events.length} upcoming events`, 'success');
+
+                if (events.length > 0) {
+                    logResult('Upcoming events:', 'info');
+                    events.forEach((event, index) => {
+                        const eventDate = new Date(event.event_date).toLocaleDateString();
+                        logResult(`${index + 1}. ${event.title} on ${eventDate}`, 'secondary');
+                    });
+                } else {
+                    logResult('ℹ️ No upcoming events found. Add some sample data first.', 'warning');
+                }
+            } catch (error) {
+                logResult('❌ Events loading failed: ' + error.message, 'danger');
+            }
+        }
+
+        async function testContactSubmit() {
+            logResult('Testing contact form submission...', 'info');
+
+            try {
+                const testContact = {
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    subject: 'Test Submission',
+                    message: 'This is a test message from the Supabase integration test.',
+                    inquiry_type: 'general'
+                };
+
+                const result = await debateDB.submitContact(testContact);
+
+                if (result.success) {
+                    logResult('✅ Contact form test successful!', 'success');
+                    logResult(`Contact ID: ${result.data.id}`, 'secondary');
+                } else {
+                    logResult('❌ Contact form test failed: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                logResult('❌ Contact form test failed: ' + error.message, 'danger');
+            }
+        }
+
+        // Add test news
+        document.getElementById('test-news-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('news-title').value;
+            const content = document.getElementById('news-content').value;
+            const author = document.getElementById('news-author').value;
+
+            logResult('Adding test news article...', 'info');
+
+            try {
+                const newsData = {
+                    title: title,
+                    slug: debateDB.slugify(title),
+                    content: content,
+                    excerpt: content.substring(0, 150) + '...',
+                    author_name: author,
+                    category: 'general',
+                    published: true,
+                    featured: false
+                };
+
+                const result = await debateDB.addNews(newsData);
+
+                if (result.success) {
+                    logResult('✅ News article added successfully!', 'success');
+                    this.reset();
+                } else {
+                    logResult('❌ Failed to add news: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                logResult('❌ Error adding news: ' + error.message, 'danger');
+            }
+        });
+
+        // Add test event
+        document.getElementById('test-event-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('event-title').value;
+            const description = document.getElementById('event-description').value;
+            const eventDate = document.getElementById('event-date').value;
+            const organizer = document.getElementById('event-organizer').value;
+
+            logResult('Adding test event...', 'info');
+
+            try {
+                const eventData = {
+                    title: title,
+                    slug: debateDB.slugify(title),
+                    description: description,
+                    short_description: description.substring(0, 100) + '...',
+                    event_type: 'general',
+                    event_date: eventDate,
+                    location: 'Test Location',
+                    organizer_name: organizer,
+                    status: 'upcoming',
+                    is_public: true
+                };
+
+                const result = await debateDB.addEvent(eventData);
+
+                if (result.success) {
+                    logResult('✅ Event added successfully!', 'success');
+                    this.reset();
+                } else {
+                    logResult('❌ Failed to add event: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                logResult('❌ Error adding event: ' + error.message, 'danger');
+            }
+        });
+
+        // Utility functions
+        function logResult(message, type = 'secondary') {
+            const resultsDiv = document.getElementById('test-results');
+            const timestamp = new Date().toLocaleTimeString();
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-sm mb-2`;
+            alertDiv.innerHTML = `<small class="text-muted">${timestamp}</small><br>${message}`;
+
+            resultsDiv.appendChild(alertDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function updateConnectionStatus(status, type) {
+            const statusDiv = document.getElementById('connection-status');
+            statusDiv.className = `alert alert-${type}`;
+            statusDiv.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i> ${status}`;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait a moment for scripts to load
+            setTimeout(async () => {
+                const connected = await testConnection();
+
+                if (connected) {
+                    // Load table status
+                    loadTableStatus();
+                }
+            }, 1000);
+        });
+
+        async function loadTableStatus() {
+            const tablesDiv = document.getElementById('tables-status');
+            tablesDiv.innerHTML = '<p class="text-muted">Checking database tables...</p>';
+
+            const tables = [
+                'members', 'news_posts', 'events', 'contact_submissions',
+                'achievements', 'training_sessions', 'resources', 'system_settings'
+            ];
+
+            let statusHtml = '<div class="row">';
+
+            for (const table of tables) {
+                try {
+                    const { count, error } = await supabaseClient
+                        .from(table)
+                        .select('*', { count: 'exact', head: true });
+
+                    if (error) {
+                        statusHtml += `
+                            <div class="col-md-6 mb-2">
+                                <span class="badge bg-danger me-2">❌</span>
+                                <strong>${table}</strong>: Error
+                            </div>
+                        `;
+                    } else {
+                        statusHtml += `
+                            <div class="col-md-6 mb-2">
+                                <span class="badge bg-success me-2">✅</span>
+                                <strong>${table}</strong>: ${count} records
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    statusHtml += `
+                        <div class="col-md-6 mb-2">
+                            <span class="badge bg-secondary me-2">❓</span>
+                            <strong>${table}</strong>: Unknown
+                        </div>
+                    `;
+                }
+            }
+
+            statusHtml += '</div>';
+            tablesDiv.innerHTML = statusHtml;
+        }
+    </script>
+
+</body>
+</html>
