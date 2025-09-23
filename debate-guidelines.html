@@ -75,7 +75,7 @@
       <div class="container">
         <div class="section-title text-center" data-aos="fade-up">
           <h2>General Debate Rules</h2>
-          <p>Fundamental principles that govern all debate formats and competitions</p>
+          <p>Fundamental principles that govern all debate formats and practice sessions</p>
         </div>
 
         <div class="row gy-4">
@@ -135,8 +135,148 @@
           <p>Comprehensive guide to British Parliamentary and Asian Parliamentary debate formats</p>
         </div>
 
-        <!-- Format Comparison -->
-        <div class="row gy-5">
+        <!-- Mobile Debate Formats Interface (visible only on mobile) -->
+        <div class="mobile-debate-formats d-block d-lg-none" data-aos="fade-up" data-aos-delay="100">
+          <div class="mobile-debate-container">
+            <div class="mobile-debate-selector">
+              <div class="debate-format-toggle">
+                <input type="radio" id="bp-toggle" name="debate-format" value="bp" checked>
+                <input type="radio" id="ap-toggle" name="debate-format" value="ap">
+                <label for="bp-toggle" class="format-option bp-option" onclick="switchDebateFormat('bp')">
+                  <div class="format-emoji">🏛</div>
+                  <div class="format-text">
+                    <span class="format-name">British Parliamentary</span>
+                    <span class="format-desc">4 teams • Complex</span>
+                  </div>
+                </label>
+                <label for="ap-toggle" class="format-option ap-option" onclick="switchDebateFormat('ap')">
+                  <div class="format-emoji">🏯</div>
+                  <div class="format-text">
+                    <span class="format-name">Asian Parliamentary</span>
+                    <span class="format-desc">2 teams • Simple</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="mobile-debate-content">
+              <div class="mobile-debate-panel active" id="mobile-bp-panel">
+                <div class="mobile-format-header">
+                  <div class="mobile-format-icon">🏛</div>
+                  <h3>British Parliamentary (BP)</h3>
+                  <p class="mobile-format-subtitle">4 teams, complex structure, extensions required</p>
+                </div>
+
+                <div class="mobile-format-details">
+                  <div class="mobile-detail-section">
+                    <h4><i class="bi bi-diagram-3"></i> Format Structure</h4>
+                    <div class="mobile-format-info">
+                      <span class="mobile-info-badge">8 speakers</span>
+                      <span class="mobile-info-badge">4 teams</span>
+                      <span class="mobile-info-badge">7 minutes</span>
+                    </div>
+                    <div class="mobile-teams-layout">
+                      <div class="mobile-team-row">
+                        <div class="mobile-team gov">OG: PM + DPM</div>
+                        <div class="mobile-team opp">OO: LO + DLO</div>
+                      </div>
+                      <div class="mobile-team-row">
+                        <div class="mobile-team gov">CG: MG + GW</div>
+                        <div class="mobile-team opp">CO: MO + OW</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mobile-detail-section">
+                    <h4><i class="bi bi-trophy"></i> Scoring (WUDC)</h4>
+                    <div class="mobile-scoring">
+                      <div class="mobile-score-item">
+                        <span>Matter: 40%</span>
+                        <div class="mobile-score-bar"><div class="mobile-score-fill" style="width: 40%"></div></div>
+                      </div>
+                      <div class="mobile-score-item">
+                        <span>Manner: 40%</span>
+                        <div class="mobile-score-bar"><div class="mobile-score-fill" style="width: 40%"></div></div>
+                      </div>
+                      <div class="mobile-score-item">
+                        <span>Method: 20%</span>
+                        <div class="mobile-score-bar"><div class="mobile-score-fill" style="width: 20%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mobile-detail-section">
+                    <h4><i class="bi bi-exclamation-circle"></i> Key Rules</h4>
+                    <ul class="mobile-key-rules">
+                      <li>Extensions required for closing teams</li>
+                      <li>Whips cannot introduce new arguments</li>
+                      <li>Teams ranked 1st to 4th</li>
+                      <li>POIs: 1st-6th minute</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mobile-debate-panel" id="mobile-ap-panel">
+                <div class="mobile-format-header">
+                  <div class="mobile-format-icon">🏯</div>
+                  <h3>Asian Parliamentary (AP)</h3>
+                  <p class="mobile-format-subtitle">2 teams, simpler structure, no extensions</p>
+                </div>
+
+                <div class="mobile-format-details">
+                  <div class="mobile-detail-section">
+                    <h4><i class="bi bi-diagram-3"></i> Format Structure</h4>
+                    <div class="mobile-format-info">
+                      <span class="mobile-info-badge ap-badge">6 speakers</span>
+                      <span class="mobile-info-badge ap-badge">2 teams</span>
+                      <span class="mobile-info-badge ap-badge">7 minutes</span>
+                    </div>
+                    <div class="mobile-teams-layout">
+                      <div class="mobile-team-row">
+                        <div class="mobile-team gov ap-gov">Gov: PM + DPM + GW</div>
+                      </div>
+                      <div class="mobile-team-row">
+                        <div class="mobile-team opp ap-opp">Opp: LO + DLO + OW</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mobile-detail-section">
+                    <h4><i class="bi bi-trophy"></i> Scoring (100 points)</h4>
+                    <div class="mobile-scoring">
+                      <div class="mobile-score-item">
+                        <span>Matter: 40%</span>
+                        <div class="mobile-score-bar"><div class="mobile-score-fill ap-fill" style="width: 40%"></div></div>
+                      </div>
+                      <div class="mobile-score-item">
+                        <span>Manner: 40%</span>
+                        <div class="mobile-score-bar"><div class="mobile-score-fill ap-fill" style="width: 40%"></div></div>
+                      </div>
+                      <div class="mobile-score-item">
+                        <span>Method: 20%</span>
+                        <div class="mobile-score-bar"><div class="mobile-score-fill ap-fill" style="width: 20%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mobile-detail-section">
+                    <h4><i class="bi bi-exclamation-circle"></i> Key Rules</h4>
+                    <ul class="mobile-key-rules">
+                      <li>No extensions or new arguments in final speech</li>
+                      <li>Direct clash encouraged</li>
+                      <li>Simpler scoring system</li>
+                      <li>POIs: 1st-6th minute</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Format Comparison (hidden on mobile) -->
+        <div class="row gy-5 d-none d-lg-flex">
           <!-- British Parliamentary -->
           <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
             <div class="format-card bp-card">
@@ -277,7 +417,9 @@
         <!-- Roles Breakdown -->
         <div class="roles-section" data-aos="fade-up" data-aos-delay="300">
           <h3 class="text-center mb-5">Speaker Roles Breakdown</h3>
-          <div class="row">
+
+          <!-- Desktop View -->
+          <div class="row d-none d-lg-flex">
             <div class="col-lg-6">
               <div class="roles-card">
                 <h4>🏛 British Parliamentary Roles</h4>
@@ -303,6 +445,46 @@
                   <div class="role-item"><strong><span class="debate-tooltip">LO<span class="tooltip-text">Leader of Opposition</span></span>:</strong> Respond to PM, present Opposition</div>
                   <div class="role-item"><strong><span class="debate-tooltip">DLO<span class="tooltip-text">Deputy Leader of Opposition</span></span>:</strong> Support LO, add arguments</div>
                   <div class="role-item"><strong><span class="debate-tooltip">OW<span class="tooltip-text">Opposition Whip</span></span>:</strong> Summarize Opposition case</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Tabbed View -->
+          <div class="d-block d-lg-none">
+            <div class="roles-mobile-tabs">
+              <div class="roles-tab-header">
+                <button class="roles-tab-btn active" data-target="bp-roles">🏛 British Parliamentary</button>
+                <button class="roles-tab-btn" data-target="ap-roles">🏯 Asian Parliamentary</button>
+              </div>
+
+              <div class="roles-tab-content">
+                <div class="roles-tab-pane active" id="bp-roles">
+                  <div class="roles-card">
+                    <div class="role-grid">
+                      <div class="role-item"><strong><span class="debate-tooltip">PM<span class="tooltip-text">Prime Minister</span></span>:</strong> Define motion, present case</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">DPM<span class="tooltip-text">Deputy Prime Minister</span></span>:</strong> Support PM, defend, rebut</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">LO<span class="tooltip-text">Leader of Opposition</span></span>:</strong> Respond to PM, present Opposition</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">DLO<span class="tooltip-text">Deputy Leader of Opposition</span></span>:</strong> Support LO, rebut Government</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">MG<span class="tooltip-text">Member of Government</span></span>:</strong> Add new extension</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">GW<span class="tooltip-text">Government Whip</span></span>:</strong> Summarize, no new arguments</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">MO<span class="tooltip-text">Member of Opposition</span></span>:</strong> Add Opposition extension</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">OW<span class="tooltip-text">Opposition Whip</span></span>:</strong> Summarize Opposition</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="roles-tab-pane" id="ap-roles">
+                  <div class="roles-card">
+                    <div class="role-grid">
+                      <div class="role-item"><strong><span class="debate-tooltip">PM<span class="tooltip-text">Prime Minister</span></span>:</strong> Define motion, present case</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">DPM<span class="tooltip-text">Deputy Prime Minister</span></span>:</strong> Support, add arguments, rebut</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">GW<span class="tooltip-text">Government Whip</span></span>:</strong> Summarize Government case</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">LO<span class="tooltip-text">Leader of Opposition</span></span>:</strong> Respond to PM, present Opposition</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">DLO<span class="tooltip-text">Deputy Leader of Opposition</span></span>:</strong> Support LO, add arguments</div>
+                      <div class="role-item"><strong><span class="debate-tooltip">OW<span class="tooltip-text">Opposition Whip</span></span>:</strong> Summarize Opposition case</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -519,6 +701,65 @@
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/js/main.js"></script>
+
+  <!-- Debate Format Switching JavaScript -->
+  <script>
+    function switchDebateFormat(formatType) {
+      // Remove active class from all panels
+      document.querySelectorAll('.mobile-debate-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      // Show the selected panel with slide animation
+      const targetPanel = document.getElementById(`mobile-${formatType}-panel`);
+      targetPanel.classList.add('active');
+
+      // Update radio button state
+      document.getElementById(`${formatType}-toggle`).checked = true;
+
+      // Add a subtle animation effect to the selector
+      const selector = document.querySelector('.mobile-debate-selector');
+      selector.style.transform = 'scale(0.98)';
+      setTimeout(() => {
+        selector.style.transform = 'scale(1)';
+      }, 150);
+    }
+
+    // Initialize debate formats on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure BP format is active by default
+      switchDebateFormat('bp');
+
+      // Add keyboard navigation support
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          const currentFormat = document.querySelector('input[name="debate-format"]:checked').value;
+          const newFormat = currentFormat === 'bp' ? 'ap' : 'bp';
+          switchDebateFormat(newFormat);
+        }
+      });
+    });
+
+    // Roles Breakdown Tab Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const rolesTabBtns = document.querySelectorAll('.roles-tab-btn');
+      const rolesTabPanes = document.querySelectorAll('.roles-tab-pane');
+
+      rolesTabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const targetId = this.getAttribute('data-target');
+
+          // Remove active class from all buttons and panes
+          rolesTabBtns.forEach(button => button.classList.remove('active'));
+          rolesTabPanes.forEach(pane => pane.classList.remove('active'));
+
+          // Add active class to clicked button and corresponding pane
+          this.classList.add('active');
+          document.getElementById(targetId).classList.add('active');
+        });
+      });
+    });
+  </script>
 
 </body>
 
