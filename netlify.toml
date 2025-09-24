@@ -1,0 +1,15 @@
+# Netlify configuration
+[build]
+  publish = "."
+
+# Remove .html extension
+[[redirects]]
+  from = "/*"
+  to = "/:splat.html"
+  status = 200
+
+# Redirect .html URLs to clean URLs
+[[redirects]]
+  from = "/*.html"
+  to = "/:splat"
+  status = 301

@@ -32,7 +32,7 @@
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #ffffff;  /* The default color of the main navmenu links */
+  --nav-color: #0f172a;  /* The default color of the main navmenu links */
   --nav-hover-color: #3b82f6; /* Applied to main navmenu links when they are hovered over or active */
   --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
   --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
@@ -169,6 +169,55 @@ h6 {
   }
 }
 
+/* Hero Video Container */
+.hero-video-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.hero-play-btn {
+  width: 120px !important;
+  height: 120px !important;
+  transform: scale(1.3);
+}
+
+.hero-play-btn:before {
+  width: 150px !important;
+  height: 150px !important;
+}
+
+.hero-play-btn:after {
+  border-top: 14px solid transparent !important;
+  border-bottom: 14px solid transparent !important;
+  border-left: 20px solid #fff !important;
+}
+
+/* GLightbox Custom Styles */
+.glightbox-clean .gclose,
+.gclose {
+  display: none !important;
+}
+
+.glightbox-clean .gnext,
+.glightbox-clean .gprev,
+.gnext,
+.gprev {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide close button and navigation buttons completely */
+.gclose.gbtn,
+.gnext.gbtn,
+.gprev.gbtn {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
 /* PHP Email Form Messages
 ------------------------------*/
 .php-email-form .error-message {
@@ -225,15 +274,12 @@ h6 {
 # Global Header
 --------------------------------------------------------------*/
 .header {
-  --background-color: rgba(0, 0, 0, 0);
-  --default-color: #ffffff;
-  --heading-color: #ffffff;
-  color: var(--default-color);
-  background-color: var(--background-color);
+  background: #ffffff;
+  color: #0f172a;
   padding: 10px 0;
   transition: all 0.5s;
   z-index: 997;
-  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
 }
 
 .header .logo {
@@ -251,8 +297,8 @@ h6 {
   font-size: 28px;
   margin: 0;
   font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  color: #0f172a;
+  text-shadow: none;
 }
 
 .header .cta-btn,
@@ -2483,12 +2529,7 @@ section,
 # Adamson Debate Society Custom Styles
 --------------------------------------------------------------*/
 
-/* Enhanced header background for debate society */
-.header {
-  background: linear-gradient(135deg, var(--navy-blue) 0%, var(--accent-color) 100%);
-  border-bottom: 3px solid var(--secondary-blue);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
-}
+/* Enhanced header background for debate society - Removed to use constitution page design */
 
 /* Hero section blue gradient */
 .hero.dark-background {
@@ -3845,16 +3886,24 @@ section,
 
 .mission-list li, .vision-list li {
   margin-bottom: 15px;
-  padding: 8px 0;
+  padding: 8px 0 8px 20px;
   border-radius: 8px;
   position: relative;
   overflow: hidden;
 }
 
+.mission-list li::before, .vision-list li::before {
+  content: "-";
+  color: #007bff;
+  font-size: 16px;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+
 .mission-list li i, .vision-list li i {
-  color: var(--accent-color);
-  font-size: 1.2rem;
-  margin-right: 10px;
+  display: none;
 }
 
 .mission-list li span, .vision-list li span {
@@ -4446,19 +4495,26 @@ section,
   .mobile-content-list li {
     display: flex;
     align-items: flex-start;
-    padding: 8px 0;
+    padding: 8px 0 8px 20px;
     font-size: 13px;
     line-height: 1.5;
     border-radius: 8px;
     margin-bottom: 8px;
+    position: relative;
+  }
+
+  .mobile-content-list li::before {
+    content: "-";
+    color: #007bff;
+    font-size: 14px;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 8px;
   }
 
   .mobile-content-list li i {
-    color: var(--accent-color);
-    font-size: 14px;
-    margin-right: 10px;
-    margin-top: 2px;
-    flex-shrink: 0;
+    display: none;
   }
 
   .mobile-content-list li span {
@@ -5835,7 +5891,7 @@ section,
 
 .resource-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -6352,5 +6408,153 @@ section,
     top: 0;
     left: -100%;
     visibility: visible;
+  }
+}
+
+/* Constitution Page */
+/* Constitution page header styles moved to global header styles */
+
+.constitution-page .main,
+.guidelines-page .main,
+.blog-page .main {
+  padding-top: 120px;
+}
+
+.constitution-page .constitution-hero {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.06));
+  padding: clamp(3rem, 6vw, 4.5rem) 0;
+}
+
+.constitution-page .constitution-hero-layout {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.constitution-page .constitution-hero-copy {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 740px;
+}
+
+.constitution-page .constitution-hero-copy h1 {
+  font-size: clamp(2.2rem, 5vw, 2.9rem);
+  color: var(--heading-color);
+  margin: 0;
+}
+
+.constitution-page .constitution-hero-copy p {
+  color: rgba(15, 23, 42, 0.75);
+  margin: 0;
+}
+
+.constitution-page .constitution-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.constitution-page .constitution-meta {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.constitution-page .constitution-meta .meta-item {
+  background: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 0.2rem;
+}
+
+.constitution-page .meta-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.constitution-page .meta-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+.constitution-page .constitution-quick-nav {
+  padding: clamp(2.5rem, 5vw, 3.5rem) 0;
+}
+
+.constitution-page .quick-nav-card {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  padding: 1.75rem 1.5rem;
+  display: grid;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.constitution-page .quick-nav-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.constitution-page .quick-nav-list a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.constitution-page .quick-nav-list a:hover,
+.constitution-page .quick-nav-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.constitution-page .constitution-body {
+  display: grid;
+  gap: 1.75rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.constitution-page .constitution-body .content-section h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  color: var(--heading-color);
+}
+
+.constitution-page .constitution-body .content-section h4 {
+  margin-top: 1rem;
+  margin-bottom: 0.35rem;
+  color: var(--heading-color);
+  font-size: 1.05rem;
+}
+
+.constitution-page .constitution-quote {
+  margin: 0;
+  border-left: 4px solid var(--accent-color);
+  padding-left: 1rem;
+}
+
+@media (min-width: 992px) {
+  .constitution-page .constitution-hero-layout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+  }
+
+  .constitution-page .constitution-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .constitution-page .constitution-meta {
+    grid-template-columns: 1fr;
   }
 }

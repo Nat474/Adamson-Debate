@@ -6,8 +6,8 @@
 // Load environment variables (for local development)
 // In production, these should be set as environment variables
 const SUPABASE_CONFIG = {
-    url: 'https://qwtvqkwhkncskjpygunz.supabase.co',
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3dHZxa3doa25jc2tqcHlndW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1MTg5NjIsImV4cCI6MjA3NDA5NDk2Mn0.AOLF08s8ahdvgd5lBq2pUBsaiWfynvS3U9RiHOKyiQI'
+    url: 'https://genkeeohrgnjliqhyuyh.supabase.co',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlbmtlZW9ocmduamxpcWh5dXloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2MzEwMTIsImV4cCI6MjA3NDIwNzAxMn0.nQvIM-pVz1tt45otWcO7dN--bcaRH_tJ7RCTBKU9d-o'
 };
 
 // Initialize Supabase client
@@ -20,55 +20,13 @@ class DebateSocietyDB {
         this.client = supabaseClient;
     }
 
-    // Members management
-    async getMembers(filters = {}) {
-        try {
-            let query = this.client.from('members').select('*');
-
-            if (filters.status) {
-                query = query.eq('status', filters.status);
-            }
-            if (filters.membership_type) {
-                query = query.eq('membership_type', filters.membership_type);
-            }
-
-            const { data, error } = await query.order('created_at', { ascending: false });
-
-            if (error) throw error;
-            return data;
-        } catch (error) {
-            console.error('Error fetching members:', error);
-            return [];
-        }
-    }
-
-    async addMember(memberData) {
-        try {
-            const { data, error } = await this.client
-                .from('members')
-                .insert([memberData])
-                .select();
-
-            if (error) throw error;
-            return { success: true, data: data[0] };
-        } catch (error) {
-            console.error('Error adding member:', error);
-            return { success: false, error: error.message };
-        }
-    }
 
     // News and Posts management
-    async getNews(limit = 10, published = true) {
+    async getNews(limit = 10) {
         try {
-            let query = this.client
+            const { data, error } = await this.client
                 .from('news_posts')
-                .select('*');
-
-            if (published) {
-                query = query.eq('published', true);
-            }
-
-            const { data, error } = await query
+                .select('*')
                 .order('created_at', { ascending: false })
                 .limit(limit);
 
@@ -135,6 +93,132 @@ class DebateSocietyDB {
         }
     }
 
+    // News category management
+    async getCommunityNews(limit = 10) {
+        try {
+            const { data, error } = await this.client
+                .from('news_community')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error fetching community news:', error);
+            return [];
+        }
+    }
+
+    async getTrainingNews(limit = 10) {
+        try {
+            const { data, error } = await this.client
+                .from('news_training')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error fetching training news:', error);
+            return [];
+        }
+    }
+
+    async getTournamentNews(limit = 10) {
+        try {
+            const { data, error } = await this.client
+                .from('news_tournaments')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error fetching tournament news:', error);
+            return [];
+        }
+    }
+
+    async getAllNews(limit = 20) {
+        try {
+            // Fetch from all news tables and combine
+            const [communityNews, trainingNews, tournamentNews] = await Promise.all([
+                this.getCommunityNews(limit),
+                this.getTrainingNews(limit),
+                this.getTournamentNews(limit)
+            ]);
+
+            // Add type field to distinguish news categories
+            const combinedNews = [
+                ...communityNews.map(news => ({ ...news, type: 'community', category: 'Community' })),
+                ...trainingNews.map(news => ({ ...news, type: 'training', category: 'Training' })),
+                ...tournamentNews.map(news => ({ ...news, type: 'tournaments', category: 'Tournaments' }))
+            ];
+
+            // Sort by date and limit
+            return combinedNews
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .slice(0, limit);
+
+        } catch (error) {
+            console.error('Error fetching all news:', error);
+            return [];
+        }
+    }
+
+    async getNewsById(id, table = null) {
+        try {
+            if (table) {
+                // Search in specific table
+                const { data, error } = await this.client
+                    .from(table)
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+                return { ...data, type: table.replace('news_', ''), category: this.getCategoryDisplayName(table) };
+            } else {
+                // Search in all news tables
+                const tables = ['news_community', 'news_training', 'news_tournaments'];
+
+                for (const tableName of tables) {
+                    try {
+                        const { data, error } = await this.client
+                            .from(tableName)
+                            .select('*')
+                            .eq('id', id)
+                            .single();
+
+                        if (!error && data) {
+                            return { ...data, type: tableName.replace('news_', ''), category: this.getCategoryDisplayName(tableName) };
+                        }
+                    } catch (tableError) {
+                        // Continue to next table if not found
+                        continue;
+                    }
+                }
+            }
+
+            return null;
+        } catch (error) {
+            console.error('Error fetching news by ID:', error);
+            return null;
+        }
+    }
+
+    getCategoryDisplayName(tableName) {
+        const displayNames = {
+            'news_community': 'Community',
+            'news_training': 'Training',
+            'news_tournaments': 'Tournaments'
+        };
+        return displayNames[tableName] || 'News';
+    }
+
     async getEventById(id) {
         try {
             const { data, error } = await this.client
@@ -166,24 +250,6 @@ class DebateSocietyDB {
         }
     }
 
-    // Contact form submissions
-    async submitContact(contactData) {
-        try {
-            const { data, error } = await this.client
-                .from('contact_submissions')
-                .insert([{
-                    ...contactData,
-                    submitted_at: new Date().toISOString()
-                }])
-                .select();
-
-            if (error) throw error;
-            return { success: true, data: data[0] };
-        } catch (error) {
-            console.error('Error submitting contact form:', error);
-            return { success: false, error: error.message };
-        }
-    }
 
     // Authentication helpers
     async signUp(email, password, userData = {}) {

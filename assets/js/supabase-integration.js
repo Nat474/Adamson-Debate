@@ -33,8 +33,6 @@ async function initializeSupabase() {
                 console.log('No specific initialization for this page');
         }
 
-        // Initialize common features
-        await initializeContactForm();
         await loadSystemSettings();
 
         console.log('Supabase integration initialized successfully');
@@ -56,8 +54,6 @@ async function initializeHomePage() {
         await loadRecentNews();
         // Load upcoming events
         await loadUpcomingEvents();
-        // Load recent achievements
-        await loadRecentAchievements();
     } catch (error) {
         console.error('Error initializing home page:', error);
     }
@@ -66,12 +62,14 @@ async function initializeHomePage() {
 // News & Events page initialization
 async function initializeNewsEventsPage() {
     try {
-        // Load all news posts
-        await loadNewsArticles();
-        // Load upcoming events sidebar
-        await loadUpcomingEventsSidebar();
-        // Load recent posts widget
-        await loadRecentPostsWidget();
+        // Load featured article
+        await loadFeaturedArticle();
+        // Load all news posts with categories
+        await loadCategorizedNews();
+        // Load upcoming events timeline
+        await loadEventsTimeline();
+        // Initialize category filters
+        await initializeCategoryFilters();
     } catch (error) {
         console.error('Error initializing news & events page:', error);
     }
@@ -112,46 +110,56 @@ async function loadUpcomingEvents() {
     }
 }
 
-// Load recent achievements
-async function loadRecentAchievements() {
+
+// Load featured article
+async function loadFeaturedArticle() {
     try {
-        // This would require adding a method to the database class
-        console.log('Loading recent achievements...');
+        const allNews = await debateDB.getAllNews(1, true);
+
+        if (allNews.length === 0) {
+            console.log('No featured article found');
+            return;
+        }
+
+        const featuredArticle = allNews[0];
+        updateFeaturedArticle(featuredArticle);
+
     } catch (error) {
-        console.error('Error loading recent achievements:', error);
+        console.error('Error loading featured article:', error);
     }
 }
 
-// Load news articles for news & events page
-async function loadNewsArticles() {
+// Load categorized news articles
+async function loadCategorizedNews() {
     try {
-        const news = await debateDB.getNews(10, true); // Get 10 most recent published news
+        const allNews = await debateDB.getAllNews(10, true);
 
-        if (news.length === 0) {
+        if (allNews.length === 0) {
             console.log('No news articles found');
             return;
         }
 
-        // Update the news section with dynamic content
-        const newsContainer = document.querySelector('.col-lg-8 .row.gy-4');
-        if (newsContainer) {
-            // Clear existing static content except featured post
-            const articles = newsContainer.querySelectorAll('.col-lg-6');
-            articles.forEach(article => article.remove());
-
-            // Add dynamic news articles
-            news.slice(1).forEach((article, index) => {
-                const articleElement = createNewsArticleElement(article, index);
-                newsContainer.appendChild(articleElement);
-            });
-
-            // Update featured post if there's a featured article
-            const featuredArticle = news.find(article => article.featured) || news[0];
-            updateFeaturedPost(featuredArticle);
-        }
+        // Skip first article (used as featured)
+        const newsToDisplay = allNews.slice(1);
+        renderNewsGrid(newsToDisplay);
 
     } catch (error) {
-        console.error('Error loading news articles:', error);
+        console.error('Error loading categorized news:', error);
+    }
+}
+
+// Load events timeline
+async function loadEventsTimeline() {
+    try {
+        const events = await debateDB.getEvents(true, 10);
+
+        console.log('Events loaded:', events.length);
+        renderEventsTimeline(events);
+
+    } catch (error) {
+        console.error('Error loading events timeline:', error);
+        // Show empty state on error
+        renderEventsTimeline([]);
     }
 }
 
@@ -190,31 +198,188 @@ function createNewsArticleElement(article, index) {
     return col;
 }
 
-// Update featured post
-function updateFeaturedPost(article) {
-    const featuredPost = document.querySelector('.featured-post');
-    if (featuredPost && article) {
-        const titleElement = featuredPost.querySelector('.title a');
-        const excerptElement = featuredPost.querySelector('.content p');
-        const authorElement = featuredPost.querySelector('.meta-top .bi-person').parentElement.querySelector('a');
-        const dateElement = featuredPost.querySelector('.meta-top time');
-        const imageElement = featuredPost.querySelector('.post-img img');
+// Update featured article
+function updateFeaturedArticle(article) {
+    const featuredArticle = document.querySelector('.featured-article');
+    if (featuredArticle && article) {
+        const titleElement = featuredArticle.querySelector('h2');
+        const excerptElement = featuredArticle.querySelector('.featured-copy p');
+        const tagElement = featuredArticle.querySelector('.news-tag');
+        const imageElement = featuredArticle.querySelector('.featured-media img');
+        const readMoreButton = featuredArticle.querySelector('.btn-cta.primary');
 
         if (titleElement) titleElement.textContent = article.title;
-        if (excerptElement) excerptElement.textContent = article.excerpt || article.content.substring(0, 200) + '...';
-        if (authorElement) authorElement.textContent = article.author_name;
-        if (dateElement) {
-            dateElement.textContent = debateDB.formatDate(article.created_at);
-            dateElement.setAttribute('datetime', article.created_at);
+        if (excerptElement) excerptElement.textContent = article.excerpt || article.content?.substring(0, 200) + '...' || 'No description available';
+        if (tagElement) {
+            tagElement.innerHTML = `<i class="bi bi-${getCategoryIcon(article.type)}"></i> ${article.category}`;
         }
-        if (imageElement && article.featured_image_url) {
-            imageElement.src = article.featured_image_url;
+        if (imageElement && article.image_url) {
+            imageElement.src = article.image_url;
+            imageElement.alt = article.title;
         }
 
-        // Update click handler
-        titleElement.onclick = () => openNewsArticle(article.id);
-        featuredPost.querySelector('.read-more a').onclick = () => openNewsArticle(article.id);
+        // Update click handlers
+        if (readMoreButton) {
+            readMoreButton.onclick = (e) => {
+                e.preventDefault();
+                openNewsArticle(article.id, article.type);
+            };
+        }
     }
+}
+
+// Render news grid
+function renderNewsGrid(newsArticles) {
+    const newsGrid = document.querySelector('.news-grid');
+    if (!newsGrid) return;
+
+    // Clear existing articles
+    newsGrid.innerHTML = '';
+
+    newsArticles.forEach((article, index) => {
+        const newsCard = createNewsCard(article, index);
+        newsGrid.appendChild(newsCard);
+    });
+}
+
+// Create news card element
+function createNewsCard(article, index) {
+    const card = document.createElement('article');
+    card.className = 'news-card';
+    card.setAttribute('data-aos', 'fade-up');
+    card.setAttribute('data-aos-delay', (index + 1) * 50);
+    card.setAttribute('data-category', article.type);
+
+    const formattedDate = debateDB.formatDate(article.created_at);
+
+    card.innerHTML = `
+        <img src="${article.image_url || 'assets/img/blog/blog-placeholder.jpg'}" alt="${article.title}">
+        <div class="news-card-body">
+            <span class="news-tag">
+                <i class="bi bi-${getCategoryIcon(article.type)}"></i> ${article.category}
+            </span>
+            <h3>${article.title}</h3>
+            <p>${article.excerpt || article.content?.substring(0, 120) + '...' || 'No description available'}</p>
+            <div class="news-meta">
+                <span><i class="bi bi-calendar"></i> ${formattedDate}</span>
+                ${article.author ? `<span><i class="bi bi-person"></i> ${article.author}</span>` : ''}
+            </div>
+        </div>
+    `;
+
+    // Add click handler to entire card
+    card.style.cursor = 'pointer';
+    card.onclick = () => openNewsArticle(article.id, article.type);
+
+    return card;
+}
+
+// Render events timeline
+function renderEventsTimeline(events) {
+    const eventsTimeline = document.querySelector('.events-timeline');
+    if (!eventsTimeline) return;
+
+    // Clear existing events
+    eventsTimeline.innerHTML = '';
+
+    if (events.length === 0) {
+        // Show empty state
+        eventsTimeline.innerHTML = `
+            <div class="timeline-entry" style="text-align: center; opacity: 0.7;">
+                <span><i class="bi bi-calendar-x"></i> No Events Scheduled</span>
+                <h3>No Upcoming Events</h3>
+                <p>Check back soon for new events and announcements.</p>
+            </div>
+        `;
+        return;
+    }
+
+    events.forEach((event, index) => {
+        const eventEntry = createEventTimelineEntry(event, index);
+        eventsTimeline.appendChild(eventEntry);
+    });
+}
+
+// Create event timeline entry
+function createEventTimelineEntry(event, index) {
+    const entry = document.createElement('article');
+    entry.className = 'timeline-entry';
+    entry.setAttribute('data-aos', 'fade-up');
+    entry.setAttribute('data-aos-delay', (index + 1) * 100);
+
+    // Format date properly - handle both date and datetime
+    let formattedDate;
+    try {
+        const eventDate = new Date(event.event_date);
+        formattedDate = eventDate.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    } catch (error) {
+        formattedDate = event.event_date || 'Date TBA';
+    }
+
+    entry.innerHTML = `
+        <span><i class="bi bi-calendar-event"></i> ${formattedDate}</span>
+        <h3>${event.title}</h3>
+        <p><i class="bi bi-geo-alt"></i> ${event.location || 'Location TBA'}</p>
+        <p>${event.short_description || event.description?.substring(0, 150) + '...' || 'Event details coming soon'}</p>
+    `;
+
+    // Add click handler - always make clickable
+    entry.onclick = () => {
+        if (event.link) {
+            // Open external link in new tab
+            window.open(event.link, '_blank');
+        } else {
+            // Show event details in modal or alert
+            showEventDetails(event);
+        }
+    };
+
+    return entry;
+}
+
+// Show event details function
+function showEventDetails(event) {
+    const eventDate = new Date(event.event_date);
+    const formattedDate = eventDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    const formattedTime = eventDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    const modalContent = `
+📅 ${event.title}
+
+📍 ${event.location || 'Location TBA'}
+🕐 ${formattedDate} at ${formattedTime}
+
+${event.description || 'Event details coming soon.'}
+
+${event.organizer_name ? `👥 Organized by: ${event.organizer_name}` : ''}
+${event.registration_required ? '📝 Registration required' : ''}
+    `;
+
+    // For now use alert - you can implement a proper modal later
+    alert(modalContent);
+}
+
+// Get category icon based on type
+function getCategoryIcon(type) {
+    const icons = {
+        'community': 'people',
+        'training': 'lightning-charge',
+        'tournaments': 'trophy'
+    };
+    return icons[type] || 'newspaper';
 }
 
 // Load upcoming events for sidebar
@@ -304,72 +469,6 @@ function createRecentPostElement(post) {
     return postDiv;
 }
 
-// Initialize contact form
-async function initializeContactForm() {
-    try {
-        // Look for contact forms on the page
-        const contactForms = document.querySelectorAll('form[class*="contact"], form[class*="php-email-form"]');
-
-        contactForms.forEach(form => {
-            form.addEventListener('submit', handleContactFormSubmission);
-        });
-
-        // If no existing form, create a simple contact form
-        if (contactForms.length === 0) {
-            createContactForm();
-        }
-
-    } catch (error) {
-        console.error('Error initializing contact form:', error);
-    }
-}
-
-// Handle contact form submission
-async function handleContactFormSubmission(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const formData = new FormData(form);
-
-    // Show loading state
-    const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
-
-    try {
-        const contactData = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone') || null,
-            subject: formData.get('subject'),
-            message: formData.get('message'),
-            inquiry_type: formData.get('inquiry_type') || 'general'
-        };
-
-        const result = await debateDB.submitContact(contactData);
-
-        if (result.success) {
-            showMessage('Thank you! Your message has been sent successfully.', 'success');
-            form.reset();
-        } else {
-            showMessage('Sorry, there was an error sending your message. Please try again.', 'error');
-        }
-    } catch (error) {
-        console.error('Error submitting contact form:', error);
-        showMessage('Sorry, there was an error sending your message. Please try again.', 'error');
-    } finally {
-        // Restore button state
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-    }
-}
-
-// Create a simple contact form if none exists
-function createContactForm() {
-    // This would be implemented if you want to add a contact form to pages that don't have one
-    console.log('No contact form found on this page');
-}
 
 // Load system settings
 async function loadSystemSettings() {
@@ -383,21 +482,138 @@ async function loadSystemSettings() {
     }
 }
 
-// Utility functions
-function openNewsArticle(articleId) {
-    // Create a modal or navigate to a detailed view
-    console.log('Opening news article:', articleId);
+// Initialize category filters
+async function initializeCategoryFilters() {
+    try {
+        const tabPills = document.querySelectorAll('.tab-pill');
 
-    // For now, just show an alert - you can implement a modal or separate page
-    alert('News article details would open here. Article ID: ' + articleId);
+        tabPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                // Remove active class from all pills
+                tabPills.forEach(p => p.classList.remove('active'));
+                // Add active class to clicked pill
+                pill.classList.add('active');
+
+                // Filter news based on category
+                const category = pill.textContent.toLowerCase();
+                filterNewsByCategory(category);
+            });
+        });
+
+    } catch (error) {
+        console.error('Error initializing category filters:', error);
+    }
+}
+
+// Filter news by category
+async function filterNewsByCategory(category) {
+    try {
+        let filteredNews;
+
+        if (category === 'all') {
+            filteredNews = await debateDB.getAllNews(10, true);
+        } else if (category === 'community') {
+            filteredNews = await debateDB.getCommunityNews(10, true);
+            filteredNews = filteredNews.map(news => ({ ...news, type: 'community', category: 'Community' }));
+        } else if (category === 'training') {
+            filteredNews = await debateDB.getTrainingNews(10, true);
+            filteredNews = filteredNews.map(news => ({ ...news, type: 'training', category: 'Training' }));
+        } else if (category === 'tournaments') {
+            filteredNews = await debateDB.getTournamentNews(10, true);
+            filteredNews = filteredNews.map(news => ({ ...news, type: 'tournaments', category: 'Tournaments' }));
+        } else {
+            filteredNews = await debateDB.getAllNews(10, true);
+        }
+
+        // Skip first article (featured) and render the rest
+        const newsToDisplay = category === 'all' ? filteredNews.slice(1) : filteredNews;
+        renderNewsGrid(newsToDisplay);
+
+    } catch (error) {
+        console.error('Error filtering news by category:', error);
+    }
+}
+
+// Utility functions
+function openNewsArticle(articleId, type = null) {
+    console.log('Opening news article:', articleId, 'Type:', type);
+
+    // Try to get the article details from database
+    debateDB.getNewsById(articleId, type ? `news_${type}` : null)
+        .then(article => {
+            if (article && article.link) {
+                // Open external link if available
+                window.open(article.link, '_blank');
+            } else {
+                // Show article details in modal or alert
+                showArticleModal(article);
+            }
+        })
+        .catch(error => {
+            console.error('Error opening article:', error);
+            alert('Unable to load article details.');
+        });
 }
 
 function openEvent(eventId) {
-    // Create a modal or navigate to event details
     console.log('Opening event:', eventId);
 
-    // For now, just show an alert - you can implement a modal or separate page
-    alert('Event details would open here. Event ID: ' + eventId);
+    debateDB.getEventById(eventId)
+        .then(event => {
+            if (event && event.link) {
+                // Open external link if available
+                window.open(event.link, '_blank');
+            } else {
+                // Show event details in modal or alert
+                showEventModal(event);
+            }
+        })
+        .catch(error => {
+            console.error('Error opening event:', error);
+            alert('Unable to load event details.');
+        });
+}
+
+function openEventLink(link) {
+    if (link) {
+        window.open(link, '_blank');
+    }
+}
+
+// Show article in modal (basic implementation)
+function showArticleModal(article) {
+    if (!article) {
+        alert('Article not found.');
+        return;
+    }
+
+    const modalContent = `
+        <h3>${article.title}</h3>
+        <p><strong>Category:</strong> ${article.category || 'News'}</p>
+        <p><strong>Date:</strong> ${debateDB.formatDate(article.created_at)}</p>
+        <p>${article.content || article.excerpt || 'Full content will be available soon.'}</p>
+    `;
+
+    // For now, use alert - you can implement a proper modal
+    alert(modalContent);
+}
+
+// Show event in modal (basic implementation)
+function showEventModal(event) {
+    if (!event) {
+        alert('Event not found.');
+        return;
+    }
+
+    const modalContent = `
+        <h3>${event.title}</h3>
+        <p><strong>Date:</strong> ${debateDB.formatDate(event.event_date)}</p>
+        <p><strong>Location:</strong> ${event.location || 'Location TBA'}</p>
+        <p>${event.description || 'Event details coming soon.'}</p>
+    `;
+
+    // For now, use alert - you can implement a proper modal
+    alert(modalContent);
 }
 
 function showMessage(message, type = 'info') {
@@ -423,20 +639,10 @@ function showMessage(message, type = 'info') {
     }, 5000);
 }
 
-// Membership application functions
-async function submitMembershipApplication(membershipType) {
-    // This would open a modal or form for membership application
-    console.log('Membership application for:', membershipType);
-
-    // For now, redirect to email
-    window.location.href = 'mailto:auds@adamson.edu.ph?subject=Membership Application - ' +
-                          (membershipType === 'varsity' ? 'Varsity Member' : 'Resident Member');
-}
 
 // Export functions for global access
 window.DebateSocietyApp = {
     openNewsArticle,
     openEvent,
-    submitMembershipApplication,
     showMessage
 };

@@ -183,7 +183,14 @@
    * Initiate glightbox
    */
   const glightbox = GLightbox({
-    selector: '.glightbox'
+    selector: '.glightbox',
+    cssEfects: {
+      fade: { in: 'fadeIn', out: 'fadeOut' }
+    },
+    closeButton: false,
+    touchNavigation: true,
+    keyboardNavigation: true,
+    skin: 'clean'
   });
 
   /**

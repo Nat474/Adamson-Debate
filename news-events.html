@@ -22,6 +22,384 @@
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <link href="assets/css/main.css" rel="stylesheet">
+  <style>
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--accent-color);
+      background: rgba(37, 99, 235, 0.12);
+      border-radius: 999px;
+    }
+
+    .news-hero {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.05));
+      padding: clamp(3.5rem, 6vw, 5rem) 0;
+    }
+
+    .news-hero-layout {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .news-hero-copy {
+      display: grid;
+      gap: 1rem;
+      max-width: 720px;
+    }
+
+    .news-hero-copy h1 {
+      font-size: clamp(2.2rem, 5vw, 3rem);
+      color: var(--heading-color);
+      margin: 0;
+    }
+
+    .news-hero-copy p {
+      margin: 0;
+      color: rgba(15, 23, 42, 0.72);
+      line-height: 1.7;
+    }
+
+    .news-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .news-hero-stats {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+      display: grid;
+      gap: 0.2rem;
+      max-width: 320px;
+    }
+
+    .stat-card span:first-child {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(15, 23, 42, 0.6);
+    }
+
+    .stat-card strong {
+      font-size: 1.2rem;
+      color: var(--heading-color);
+    }
+
+    .news-feature {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .featured-article {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 2rem);
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+    }
+
+    .featured-media img {
+      width: 100%;
+      height: clamp(240px, 40vw, 360px);
+      object-fit: cover;
+    }
+
+    .featured-copy {
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      display: grid;
+      gap: 1rem;
+    }
+
+    .featured-copy h2 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      color: var(--heading-color);
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: rgba(15, 23, 42, 0.6);
+    }
+
+    .news-feed {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .news-feed-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .tab-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tab-pill {
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 999px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #fff;
+      color: rgba(15, 23, 42, 0.6);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-pill:hover {
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--accent-color);
+      border-color: rgba(37, 99, 235, 0.25);
+    }
+
+    .tab-pill.active {
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent-color);
+      border-color: rgba(37, 99, 235, 0.35);
+    }
+
+    .news-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .news-card {
+      display: grid;
+      gap: 1.15rem;
+      background: #fff;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 18px;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .news-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 42px rgba(15, 23, 42, 0.14);
+    }
+
+    .news-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .news-card-body {
+      padding: 1.25rem 1.5rem 1.6rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .news-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-color);
+    }
+
+    .news-card-body h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--heading-color);
+    }
+
+    .news-card-body p {
+      margin: 0;
+      color: rgba(15, 23, 42, 0.7);
+    }
+
+    .news-meta {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      color: rgba(15, 23, 42, 0.55);
+    }
+
+    .events-board {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .events-columns {
+      display: grid;
+      gap: clamp(2rem, 4vw, 3rem);
+    }
+
+    .events-timeline {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .timeline-entry {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 1.2rem 1.4rem;
+      display: grid;
+      gap: 0.6rem;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .timeline-entry:hover {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(37, 99, 235, 0.3);
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .timeline-entry h3 {
+      color: #000;
+      margin: 0;
+      transition: color 0.2s ease;
+    }
+
+    .timeline-entry:hover h3 {
+      color: var(--accent-color);
+    }
+
+    .timeline-entry p {
+      color: #333;
+      margin: 0;
+    }
+
+    .timeline-entry span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-color);
+    }
+
+    .events-overview {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1.75rem;
+      display: grid;
+      gap: 1rem;
+      color: #fff;
+    }
+
+    .events-overview p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .events-overview ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+      font-size: 0.95rem;
+    }
+
+    .press-kit {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .press-kit-grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .press-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1.5rem;
+      display: grid;
+      gap: 0.75rem;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+    }
+
+    .press-card h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--heading-color);
+    }
+
+    .press-card p {
+      margin: 0;
+      color: rgba(15, 23, 42, 0.7);
+    }
+
+    .press-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+
+    @media (min-width: 768px) {
+      .news-hero-layout {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        align-items: start;
+      }
+
+      .news-hero-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .news-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+
+      .press-kit-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .news-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .featured-article {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: stretch;
+      }
+
+      .featured-media img {
+        height: 100%;
+      }
+    }
+  </style>
+
 </head>
 
 <body class="blog-page">
@@ -40,6 +418,7 @@
           <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#programs">Programs</a></li>
           <li><a href="index.html#membership">Membership</a></li>
+          <li><a href="index.html#partners">Partners</a></li>
           <li><a href="news-events.html" class="active">News & Events</a></li>
           <li class="dropdown"><a href="#"><span>Resources</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -55,234 +434,126 @@
     </div>
   </header>
 
-  <main class="main" style="padding-top: 100px;">
+    <main class="main">
 
-    <!-- News Section -->
-    <section id="news" class="blog-posts section">
+    <section class="news-hero section light-background">
       <div class="container">
-        <div class="section-title text-center" data-aos="fade-up">
-          <h2>Latest News</h2>
-          <p>Stay updated with the latest achievements and announcements from the Adamson Debate Society</p>
-        </div>
-
-        <div class="row gy-4">
-          <div class="col-12">
-            <article class="featured-post" data-aos="fade-up">
-              <div class="post-img">
-                <img src="assets/img/blog/blog-1.jpg" alt="" class="img-fluid">
-              </div>
-              <h2 class="title">
-                <a href="#">Adamson Debate Society Wins National Parliamentary Championship 2024</a>
-              </h2>
-              <div class="meta-top">
-                <ul>
-                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">John Martinez</a></li>
-                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="2024-09-15">Sep 15, 2024</time></a></li>
-                </ul>
-              </div>
-              <div class="content">
-                <p>
-                  Our team has achieved an outstanding victory at the National Parliamentary Debate Championship, demonstrating excellence in argumentation and critical thinking. This marks our third consecutive national title and solidifies our position as one of the premier debate societies in the Philippines.
-                </p>
-                <div class="read-more mt-auto align-self-end">
-                  <a href="#">Read More <i class="bi bi-arrow-right"></i></a>
-                </div>
-              </div>
-            </article>
+        <div class="news-hero-layout">
+          <div class="news-hero-copy" data-aos="fade-up">
+            <span class="eyebrow">Newsroom</span>
+            <h1>Stories and updates from the Adamson Debate Society</h1>
+            <p>Follow tournament highlights, community outreach, and training programs that shape the next generation of Adamsonian debaters.</p>
+            <div class="news-hero-actions">
+              <a class="btn-cta primary" href="#news-feed">Latest Headlines</a>
+              <a class="btn-cta ghost" href="#events-board">Upcoming Events</a>
+            </div>
           </div>
-
-          <div class="col-lg-6">
-            <article data-aos="fade-up" data-aos-delay="100">
-              <div class="post-img">
-                <img src="assets/img/blog/blog-3.jpg" alt="" class="img-fluid">
-              </div>
-              <h2 class="title">
-                <a href="#">New Training Program: Advanced Argumentation Techniques</a>
-              </h2>
-              <div class="meta-top">
-                <ul>
-                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">Prof. David Chen</a></li>
-                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="2024-09-05">Sep 5, 2024</time></a></li>
-                </ul>
-              </div>
-              <div class="content">
-                <p>
-                  We're launching a new advanced training program focusing on sophisticated argumentation techniques and critical analysis skills.
-                </p>
-                <div class="read-more mt-auto align-self-end">
-                  <a href="#">Read More <i class="bi bi-arrow-right"></i></a>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="col-lg-6">
-            <article data-aos="fade-up" data-aos-delay="200">
-              <div class="post-img">
-                <img src="assets/img/blog/blog-4.jpg" alt="" class="img-fluid">
-              </div>
-              <h2 class="title">
-                <a href="#">Alumni Spotlight: Where Are They Now?</a>
-              </h2>
-              <div class="meta-top">
-                <ul>
-                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">Alumni Committee</a></li>
-                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="2024-08-28">Aug 28, 2024</time></a></li>
-                </ul>
-              </div>
-              <div class="content">
-                <p>
-                  Celebrating the achievements of our distinguished alumni who continue to make their mark in various professional fields.
-                </p>
-                <div class="read-more mt-auto align-self-end">
-                  <a href="#">Read More <i class="bi bi-arrow-right"></i></a>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="col-lg-6">
-            <article data-aos="fade-up" data-aos-delay="300">
-              <div class="post-img">
-                <img src="assets/img/blog/blog-5.jpg" alt="" class="img-fluid">
-              </div>
-              <h2 class="title">
-                <a href="#">Community Outreach: Debate Workshops for High Schools</a>
-              </h2>
-              <div class="meta-top">
-                <ul>
-                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">Outreach Team</a></li>
-                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="2024-08-20">Aug 20, 2024</time></a></li>
-                </ul>
-              </div>
-              <div class="content">
-                <p>
-                  Our society is committed to giving back to the community through free debate workshops for local high schools.
-                </p>
-                <div class="read-more mt-auto align-self-end">
-                  <a href="#">Read More <i class="bi bi-arrow-right"></i></a>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="col-lg-6">
-            <article data-aos="fade-up" data-aos-delay="400">
-              <div class="post-img">
-                <img src="assets/img/blog/blog-6.jpg" alt="" class="img-fluid">
-              </div>
-              <h2 class="title">
-                <a href="#">AUDS Hosts International Debate Summit</a>
-              </h2>
-              <div class="meta-top">
-                <ul>
-                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">Event Committee</a></li>
-                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="2024-08-15">Aug 15, 2024</time></a></li>
-                </ul>
-              </div>
-              <div class="content">
-                <p>
-                  Successfully hosted the first-ever International Debate Summit, bringing together delegates from 15 countries to discuss global issues.
-                </p>
-                <div class="read-more mt-auto align-self-end">
-                  <a href="#">Read More <i class="bi bi-arrow-right"></i></a>
-                </div>
-              </div>
-            </article>
+          <div class="news-hero-stats" data-aos="fade-up" data-aos-delay="150">
+            <div class="stat-card">
+              <span>Headline</span>
+              <strong>National Parliamentary Champions 2024</strong>
+              <span>Third consecutive title secured by AUDS Varsity.</span>
+            </div>
+            <div class="stat-card">
+              <span>Next Event</span>
+              <strong>Public Speaking Lab, Oct 22</strong>
+              <span>Hands-on workshop on persuasive delivery and cadence.</span>
+            </div>
+            <div class="stat-card">
+              <span>Community</span>
+              <strong>9 Active Outreach Projects</strong>
+              <span>Partner schools engaged across Metro Manila.</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Events Section -->
-    <section id="events" class="events section light-background">
+    <section class="news-feature section" id="news-feed">
       <div class="container">
-        <div class="section-title text-center" data-aos="fade-up">
+        <div class="featured-article" data-aos="fade-up">
+          <div class="featured-media">
+            <img src="assets/img/blog/blog-1.jpg" alt="Adamson Debate Society team celebrating championship">
+          </div>
+          <div class="featured-copy">
+            <span class="news-tag"><i class="bi bi-trophy"></i> Championship</span>
+            <h2>Adamson Debate Society Wins National Parliamentary Championship 2024</h2>
+            <p>Our varsity squad captured its third consecutive national title with a unanimous panel decision in the grand finals, showcasing strategic depth and polished delivery against the top universities in the country.</p>
+            <div class="news-hero-actions">
+              <a class="btn-cta primary" href="#">Read Full Story</a>
+              <a class="btn-cta ghost" href="#events-board">View Celebration Events</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="news-feed section" id="headlines">
+      <div class="container">
+        <div class="news-feed-header">
+          <h2 class="section-title mb-0">Latest Headlines</h2>
+          <div class="tab-pills">
+            <span class="tab-pill active">All</span>
+            <span class="tab-pill">Training</span>
+            <span class="tab-pill">Community</span>
+            <span class="tab-pill">Tournaments</span>
+          </div>
+        </div>
+        <div class="news-grid">
+          <article class="news-card" data-aos="fade-up" data-aos-delay="50">
+            <img src="assets/img/blog/blog-3.jpg" alt="Coach guiding students during training">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-lightning-charge"></i> Training</span>
+              <h3>New Program: Advanced Argumentation Techniques</h3>
+              <p>Weekly labs with Prof. David Chen now cover layered weighing, collapsing strategies, and judge calibration drills.</p>
+            </div>
+          </article>
+          <article class="news-card" data-aos="fade-up" data-aos-delay="100">
+            <img src="assets/img/blog/blog-4.jpg" alt="Collage of debate alumni at work">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-people"></i> Alumni</span>
+              <h3>Alumni Spotlight: Where Are They Now?</h3>
+              <p>Discover how former AUDS debaters lead in law, policy, tech, and education while mentoring current members.</p>
+            </div>
+          </article>
+          <article class="news-card" data-aos="fade-up" data-aos-delay="150">
+            <img src="assets/img/blog/blog-5.jpg" alt="Facilitators seen with high school students">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-heart"></i> Outreach</span>
+              <h3>Community Outreach: Debate Workshops for High Schools</h3>
+              <p>Volunteer mentors hosted back-to-back introductory debate sessions with partner campuses across Manila.</p>
+            </div>
+          </article>
+          <article class="news-card" data-aos="fade-up" data-aos-delay="200">
+            <img src="assets/img/blog/blog-6.jpg" alt="International delegates in discussion">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-globe"></i> Summit</span>
+              <h3>AUDS Hosts International Debate Summit</h3>
+              <p>Delegates from 15 countries gathered at Adamson University for three days of panels, scrimmages, and motion clinics.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="events-board section dark-background" id="events-board">
+      <div class="container">
+        <div class="section-title text-center">
           <h2>Upcoming Events</h2>
-          <p>Join us at our upcoming events, workshops, and training sessions</p>
+          <p>Mark your calendar for competitions, workshops, and community gatherings.</p>
         </div>
-
-        <div class="row gy-4">
-          <div class="col-lg-6">
-            <div class="event-card bg-white p-4 rounded shadow-sm" data-aos="fade-up" data-aos-delay="100">
-              <div class="d-flex align-items-center mb-3">
-                <div class="event-date-large bg-primary text-white rounded text-center me-3 p-3">
-                  <div class="fw-bold fs-4">15</div>
-                  <div class="small">OCT</div>
-                  <div class="small">2024</div>
-                </div>
-                <div class="event-content flex-grow-1">
-                  <h4><a href="#" class="text-decoration-none">Inter-University Debate Championship</a></h4>
-                  <p class="text-muted mb-1"><i class="bi bi-clock me-1"></i> 9:00 AM - 6:00 PM</p>
-                  <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i> Adamson University Auditorium</p>
-                </div>
-              </div>
-              <p class="mb-3">Annual championship featuring top debate teams from across the Philippines. Registration deadline: October 10, 2024.</p>
-              <a href="#" class="btn btn-primary">Register Now</a>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="event-card bg-white p-4 rounded shadow-sm" data-aos="fade-up" data-aos-delay="200">
-              <div class="d-flex align-items-center mb-3">
-                <div class="event-date-large bg-primary text-white rounded text-center me-3 p-3">
-                  <div class="fw-bold fs-4">22</div>
-                  <div class="small">OCT</div>
-                  <div class="small">2024</div>
-                </div>
-                <div class="event-content flex-grow-1">
-                  <h4><a href="#" class="text-decoration-none">Public Speaking Workshop</a></h4>
-                  <p class="text-muted mb-1"><i class="bi bi-clock me-1"></i> 2:00 PM - 5:00 PM</p>
-                  <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i> Room 304, Ozanam Building</p>
-                </div>
-              </div>
-              <p class="mb-3">Advanced workshop on persuasive communication and presentation skills for all skill levels.</p>
-              <a href="#" class="btn btn-primary">Join Workshop</a>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="event-card bg-white p-4 rounded shadow-sm" data-aos="fade-up" data-aos-delay="300">
-              <div class="d-flex align-items-center mb-3">
-                <div class="event-date-large bg-primary text-white rounded text-center me-3 p-3">
-                  <div class="fw-bold fs-4">05</div>
-                  <div class="small">NOV</div>
-                  <div class="small">2024</div>
-                </div>
-                <div class="event-content flex-grow-1">
-                  <h4><a href="#" class="text-decoration-none">Alumni Homecoming</a></h4>
-                  <p class="text-muted mb-1"><i class="bi bi-clock me-1"></i> 6:00 PM - 10:00 PM</p>
-                  <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i> University Function Hall</p>
-                </div>
-              </div>
-              <p class="mb-3">Annual gathering of current members and distinguished alumni to celebrate our shared legacy.</p>
-              <a href="#" class="btn btn-primary">RSVP</a>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="event-card bg-white p-4 rounded shadow-sm" data-aos="fade-up" data-aos-delay="400">
-              <div class="d-flex align-items-center mb-3">
-                <div class="event-date-large bg-primary text-white rounded text-center me-3 p-3">
-                  <div class="fw-bold fs-4">12</div>
-                  <div class="small">NOV</div>
-                  <div class="small">2024</div>
-                </div>
-                <div class="event-content flex-grow-1">
-                  <h4><a href="#" class="text-decoration-none">Weekly Training Session</a></h4>
-                  <p class="text-muted mb-1"><i class="bi bi-clock me-1"></i> 4:00 PM - 7:00 PM</p>
-                  <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i> Conference Room B</p>
-                </div>
-              </div>
-              <p class="mb-3">Regular training session focusing on parliamentary debate format and impromptu speaking.</p>
-              <a href="#" class="btn btn-primary">Attend</a>
-            </div>
+        <div class="events-columns">
+          <div class="events-timeline" data-aos="fade-up">
+            <!-- Events will be loaded dynamically from Supabase -->
           </div>
         </div>
       </div>
     </section>
+
+    
 
   </main>
+
 
   <footer id="footer" class="footer dark-background">
     <div class="container">

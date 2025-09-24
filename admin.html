@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Adamson Debate Society</title>
+
+    <!-- Admin Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dc2626'%3e%3cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3e%3cpath d='M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z' fill='white'/%3e%3c/svg%3e">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dc2626'%3e%3cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3e%3cpath d='M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z' fill='white'/%3e%3c/svg%3e">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #16a34a;
+            --warning-color: #f59e0b;
+            --danger-color: #dc2626;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+        }
+
+        .admin-container {
+            padding: 2rem 0;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .admin-nav {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 1rem;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 10px;
+            margin: 0 0.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pills .nav-link.active {
+            background: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(37, 99, 235, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.6rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px 20px 0 0;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem 0;
+            }
+
+            .nav-pills {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="position-fixed w-100 h-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 9999;">
+        <div class="card shadow-lg" style="max-width: 400px; width: 90%; border-radius: 20px; border: none;">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#dc2626">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                            <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="white"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold text-dark">Admin Login</h3>
+                    <p class="text-muted mb-0">Adamson Debate Society</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="loginEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="loginEmail" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="loginPassword" required autocomplete="current-password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" onclick="togglePasswordVisibility()">
+                                <i class="bi bi-eye" id="passwordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="loginBtn">
+                            <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            <span id="loginText">Sign In</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="loginError" class="alert alert-danger mt-3 d-none" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span id="loginErrorText"></span>
+                </div>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        <i class="bi bi-shield-lock"></i> Secure Admin Access
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Interface (Hidden by default) -->
+    <div id="adminInterface" class="d-none">
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="mb-0">
+                        <i class="bi bi-shield-lock-fill text-primary"></i>
+                        Admin Panel
+                    </h1>
+                    <p class="text-muted mb-0">Adamson Debate Society Management</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="badge bg-success me-2">
+                        <i class="bi bi-check-circle"></i> Connected
+                    </span>
+                    <span class="badge bg-info me-2">
+                        <i class="bi bi-person-circle"></i> <span id="userEmail">admin@adamson.edu</span>
+                    </span>
+                    <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container admin-container">
+        <!-- Navigation Tabs -->
+        <div class="admin-card">
+            <div class="card-body">
+                <ul class="nav nav-pills justify-content-center" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="events-tab" data-bs-toggle="pill" data-bs-target="#events" type="button">
+                            <i class="bi bi-calendar-event"></i> Events
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="news-tab" data-bs-toggle="pill" data-bs-target="#news" type="button">
+                            <i class="bi bi-newspaper"></i> News
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="training-tab" data-bs-toggle="pill" data-bs-target="#training" type="button">
+                            <i class="bi bi-mortarboard"></i> Training Sessions
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="resources-tab" data-bs-toggle="pill" data-bs-target="#resources" type="button">
+                            <i class="bi bi-folder"></i> Resources
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="adminTabContent">
+            <!-- Events Tab -->
+            <div class="tab-pane fade show active" id="events" role="tabpanel">
+                <div class="admin-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Events Management</h5>
+                        <button class="btn btn-primary" onclick="showEventForm()">
+                            <i class="bi bi-plus-lg"></i> Add Event
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Event Title</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eventsTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 mb-0">Loading events...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Tab -->
+            <div class="tab-pane fade" id="news" role="tabpanel">
+                <div class="admin-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-newspaper"></i> News Management</h5>
+                        <button class="btn btn-primary" onclick="showNewsForm()">
+                            <i class="bi bi-plus-lg"></i> Add News
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <select class="form-select" id="newsCategory" onchange="loadNews()">
+                                <option value="all">All Categories</option>
+                                <option value="community">Community</option>
+                                <option value="training">Training</option>
+                                <option value="tournaments">Tournaments</option>
+                            </select>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="newsTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 mb-0">Loading news...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Sessions Tab -->
+            <div class="tab-pane fade" id="training" role="tabpanel">
+                <div class="admin-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-mortarboard"></i> Training Sessions</h5>
+                        <button class="btn btn-primary" onclick="showTrainingForm()">
+                            <i class="bi bi-plus-lg"></i> Add Training
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Session Title</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="trainingTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 mb-0">Loading training sessions...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Tab -->
+            <div class="tab-pane fade" id="resources" role="tabpanel">
+                <div class="admin-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-folder"></i> Resources</h5>
+                        <button class="btn btn-primary" onclick="showResourceForm()">
+                            <i class="bi bi-plus-lg"></i> Add Resource
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Resource Title</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resourcesTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 mb-0">Loading resources...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalTitle">Add Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <input type="hidden" id="eventId">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="eventTitle" class="form-label">Event Title *</label>
+                                    <input type="text" class="form-control" id="eventTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="eventDate" class="form-label">Event Date *</label>
+                                    <input type="datetime-local" class="form-control" id="eventDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="eventLocation" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="eventLocation">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="eventOrganizer" class="form-label">Organizer</label>
+                                    <input type="text" class="form-control" id="eventOrganizer">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventShortDescription" class="form-label">Short Description</label>
+                            <textarea class="form-control" id="eventShortDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Full Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventLink" class="form-label">External Link</label>
+                            <input type="url" class="form-control" id="eventLink" placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEvent()">
+                        <span id="eventSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        Save Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Modal -->
+    <div class="modal fade" id="newsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newsModalTitle">Add News</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newsForm">
+                        <input type="hidden" id="newsId">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="newsTitle" class="form-label">News Title *</label>
+                                    <input type="text" class="form-control" id="newsTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="newsCategory" class="form-label">Category *</label>
+                                    <select class="form-select" id="newsCategorySelect" required>
+                                        <option value="">Select Category</option>
+                                        <option value="community">Community</option>
+                                        <option value="training">Training</option>
+                                        <option value="tournaments">Tournaments</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="newsAuthor" class="form-label">Author</label>
+                                    <input type="text" class="form-control" id="newsAuthor">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="newsFeatured">
+                                    <label class="form-check-label" for="newsFeatured">
+                                        Featured Article
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newsImageUrl" class="form-label">Image URL</label>
+                            <input type="url" class="form-control" id="newsImageUrl" placeholder="https://...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newsExcerpt" class="form-label">Excerpt</label>
+                            <textarea class="form-control" id="newsExcerpt" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newsContent" class="form-label">Content *</label>
+                            <textarea class="form-control" id="newsContent" rows="6" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newsLink" class="form-label">External Link</label>
+                            <input type="url" class="form-control" id="newsLink" placeholder="https://...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNews()">
+                        <span id="newsSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        Save News
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Modal -->
+    <div class="modal fade" id="trainingModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="trainingModalTitle">Add Training Session</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="trainingForm">
+                        <input type="hidden" id="trainingId">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="trainingTitle" class="form-label">Session Title *</label>
+                                    <input type="text" class="form-control" id="trainingTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="trainingDate" class="form-label">Session Date *</label>
+                                    <input type="datetime-local" class="form-control" id="trainingDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="trainingDuration" class="form-label">Duration (mins)</label>
+                                    <input type="number" class="form-control" id="trainingDuration" value="60">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="trainingLevel" class="form-label">Skill Level</label>
+                                    <select class="form-select" id="trainingLevel">
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="trainingMaxParticipants" class="form-label">Max Participants</label>
+                                    <input type="number" class="form-control" id="trainingMaxParticipants">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="trainingLocation" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="trainingLocation">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="trainingTrainer" class="form-label">Trainer</label>
+                                    <input type="text" class="form-control" id="trainingTrainer">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="trainingDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="trainingDescription" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="trainingMaterials" class="form-label">Materials Needed (separate with commas)</label>
+                            <textarea class="form-control" id="trainingMaterials" rows="2" placeholder="Notebook, Pen, Laptop, etc."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveTraining()">
+                        <span id="trainingSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        Save Training
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Modal -->
+    <div class="modal fade" id="resourceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resourceModalTitle">Add Resource</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resourceForm">
+                        <input type="hidden" id="resourceId">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="resourceTitle" class="form-label">Resource Title *</label>
+                                    <input type="text" class="form-control" id="resourceTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="resourceType" class="form-label">Type</label>
+                                    <select class="form-select" id="resourceType">
+                                        <option value="document">Document</option>
+                                        <option value="video">Video</option>
+                                        <option value="link">Link</option>
+                                        <option value="book">Book</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="resourceCategory" class="form-label">Category</label>
+                                    <input type="text" class="form-control" id="resourceCategory" placeholder="e.g., Debate Techniques">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="resourceAccess" class="form-label">Access Level</label>
+                                    <select class="form-select" id="resourceAccess">
+                                        <option value="public">Public</option>
+                                        <option value="members">Members Only</option>
+                                        <option value="varsity">Varsity Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resourceUrl" class="form-label">File/Resource URL</label>
+                            <input type="url" class="form-control" id="resourceUrl" placeholder="https://...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="resourceDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="resourceDescription" rows="4"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveResource()">
+                        <span id="resourceSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        Save Resource
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle"></i> <span id="successMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle"></i> <span id="errorMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="assets/js/admin-config.js"></script>
+</body>
+</html>

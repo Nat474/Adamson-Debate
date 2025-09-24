@@ -22,6 +22,144 @@
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    /* Resource Library Popup Styles */
+    .resource-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .resource-popup-overlay.show {
+      display: flex;
+    }
+
+    .resource-popup {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 20px;
+      padding: 0;
+      box-shadow: 0 25px 50px rgba(15, 23, 42, 0.25);
+      max-width: 480px;
+      width: 90%;
+      max-height: 90vh;
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .resource-popup-header {
+      background: linear-gradient(135deg, var(--accent-color) 0%, #1e40af 100%);
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .resource-popup-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .popup-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .popup-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .resource-popup-content {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .resource-popup-content p {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .popup-actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-popup {
+      background: linear-gradient(135deg, var(--accent-color) 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+
+    .btn-popup:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .resource-popup {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+      }
+
+      .resource-popup-header {
+        padding: 1.25rem 1.5rem;
+      }
+
+      .resource-popup-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
 
 <body class="training-page">
@@ -40,8 +178,8 @@
           <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#programs">Programs</a></li>
           <li><a href="index.html#membership">Membership</a></li>
-          <li><a href="news-events.html">News & Events</a></li>
           <li><a href="index.html#partners">Partners</a></li>
+          <li><a href="news-events.html">News & Events</a></li>
           <li class="dropdown"><a href="#"><span>Resources</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="debate-guidelines.html">Debate Guidelines</a></li>
@@ -100,57 +238,6 @@
       </div>
     </section>
 
-    <section id="training-tracks" class="training-tracks section light-background">
-      <div class="container">
-        <div class="section-title" data-aos="fade-up">
-          <h2>Progressive Training Tracks</h2>
-          <p>Each track builds competitive instincts with targeted drills, research guidance, and adjudicator-calibrated feedback.</p>
-        </div>
-        <div class="tracks-grid">
-          <article class="track-card" data-aos="fade-up">
-            <div class="track-icon beginner">
-              <i class="bi bi-compass"></i>
-            </div>
-            <h3>Foundations Lab</h3>
-            <p>Kickstart your debate journey with fundamentals in speaking structure, case theory, and motion analysis.</p>
-            <ul>
-              <li><i class="bi bi-dot"></i> BP role orientation &amp; flowing basics</li>
-              <li><i class="bi bi-dot"></i> Story-driven case building</li>
-              <li><i class="bi bi-dot"></i> Delivery clinics for clarity and pace</li>
-            </ul>
-            <span class="track-tag beginner">Beginner</span>
-          </article>
-
-          <article class="track-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="track-icon intermediate">
-              <i class="bi bi-diagram-3"></i>
-            </div>
-            <h3>Strategy Studio</h3>
-            <p>Translate foundations into tournament-ready strategies with refutation labs and judge calibration.</p>
-            <ul>
-              <li><i class="bi bi-dot"></i> Advanced clash mapping &amp; weighing</li>
-              <li><i class="bi bi-dot"></i> Impact framing under pressure</li>
-              <li><i class="bi bi-dot"></i> Panel deliberation simulations</li>
-            </ul>
-            <span class="track-tag intermediate">Intermediate</span>
-          </article>
-
-          <article class="track-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="track-icon advanced">
-              <i class="bi bi-trophy"></i>
-            </div>
-            <h3>Varsity Sprint</h3>
-            <p>Refine elite techniques for break rounds with whip dynamics, judge adaptation, and motion prep sprints.</p>
-            <ul>
-              <li><i class="bi bi-dot"></i> Extension labs &amp; whip narrative drills</li>
-              <li><i class="bi bi-dot"></i> Advanced comparative analytics</li>
-              <li><i class="bi bi-dot"></i> Tournament scrimmage series</li>
-            </ul>
-            <span class="track-tag advanced">Advanced</span>
-          </article>
-        </div>
-      </div>
-    </section>
 
     <section id="resource-library" class="resource-library section">
       <div class="container">
@@ -160,7 +247,7 @@
         </div>
 
         <div class="resource-grid">
-          <article class="resource-card" data-aos="zoom-in">
+          <a href="#" class="resource-card" data-aos="zoom-in">
             <span class="resource-badge">Template</span>
             <h3>Case Construction Toolkit</h3>
             <p>Step-by-step worksheets for first speeches, with comparative analysis prompts and framing cues.</p>
@@ -169,13 +256,9 @@
               <li>Motion slicing cheat sheet (Notion)</li>
               <li>30-minute prep sprint timer (Google Sheet)</li>
             </ul>
-            <div class="resource-actions">
-              <a href="#" class="btn-ghost small">Download Pack</a>
-              <a href="#" class="btn-link">Preview</a>
-            </div>
-          </article>
+          </a>
 
-          <article class="resource-card" data-aos="zoom-in" data-aos-delay="100">
+          <a href="#" class="resource-card" data-aos="zoom-in" data-aos-delay="100">
             <span class="resource-badge theory">Theory</span>
             <h3>Argumentation Playbook</h3>
             <p>Module deck covering burdens, weighing, and judge adaptation with exemplar flows from national finals.</p>
@@ -184,28 +267,10 @@
               <li>Rebuttal scaffolding exercises</li>
               <li>Judge feedback annotation samples</li>
             </ul>
-            <div class="resource-actions">
-              <a href="#" class="btn-ghost small">View Slides</a>
-              <a href="#" class="btn-link">Add to Drive</a>
-            </div>
-          </article>
+          </a>
 
-          <article class="resource-card" data-aos="zoom-in" data-aos-delay="200">
-            <span class="resource-badge video">Video Lab</span>
-            <h3>Delivery &amp; Vocal Lab</h3>
-            <p>Short-form drills for tone control, pacing, and persuasive cadence with coach breakdowns.</p>
-            <ul>
-              <li>Breathing ladder &amp; emphasis drills</li>
-              <li>Mirror practice checklist</li>
-              <li>Vocal warm-up routines (audio)</li>
-            </ul>
-            <div class="resource-actions">
-              <a href="#" class="btn-ghost small">Watch Series</a>
-              <a href="#" class="btn-link">Download Notes</a>
-            </div>
-          </article>
 
-          <article class="resource-card" data-aos="zoom-in" data-aos-delay="300">
+          <a href="#" class="resource-card" data-aos="zoom-in" data-aos-delay="300">
             <span class="resource-badge analytics">Analytics</span>
             <h3>Judge &amp; Motion Tracker</h3>
             <p>Track performance trends across tournaments with motion archetype analytics and judge profiles.</p>
@@ -214,11 +279,7 @@
               <li>Motion difficulty heat map</li>
               <li>Judge preference quick notes</li>
             </ul>
-            <div class="resource-actions">
-              <a href="#" class="btn-ghost small">Open Dashboard</a>
-              <a href="#" class="btn-link">Duplicate Sheet</a>
-            </div>
-          </article>
+          </a>
         </div>
       </div>
     </section>
@@ -390,20 +451,6 @@
       </div>
     </section>
 
-    <section class="training-cta section">
-      <div class="container">
-        <div class="cta-card" data-aos="zoom-in">
-          <div class="cta-content">
-            <h2>Ready to take the floor?</h2>
-            <p>Register for the next onboarding batch or book a diagnostic debate to receive a personalised training map.</p>
-          </div>
-          <div class="cta-actions">
-            <a class="btn-cta primary" href="index.html#membership">Begin Application</a>
-            <a class="btn-cta ghost" href="mailto:auds@adamson.edu.ph">Email the Coaches</a>
-          </div>
-        </div>
-      </div>
-    </section>
 
   </main>
 
@@ -452,12 +499,74 @@
 
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <!-- Resource Library Coming Soon Popup -->
+  <div id="resourcePopup" class="resource-popup-overlay">
+    <div class="resource-popup">
+      <div class="resource-popup-header">
+        <h3><i class="bi bi-hourglass-split"></i> Coming Soon</h3>
+        <button type="button" class="popup-close" id="closePopup" aria-label="Close popup">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="resource-popup-content">
+        <p>This resource will be available to the public soon. Stay tuned for updates!</p>
+        <div class="popup-actions">
+          <button type="button" class="btn-popup" id="closePopupBtn">Understood</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Resource Library Popup Functionality
+      const resourceCards = document.querySelectorAll('.resource-card');
+      const resourcePopup = document.getElementById('resourcePopup');
+      const closePopupBtn = document.getElementById('closePopup');
+      const closePopupButton = document.getElementById('closePopupBtn');
+
+      // Add click event to all resource cards
+      resourceCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+          e.preventDefault();
+          showPopup();
+        });
+      });
+
+      // Close popup functions
+      function showPopup() {
+        resourcePopup.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function hidePopup() {
+        resourcePopup.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+
+      // Close popup event listeners
+      closePopupBtn.addEventListener('click', hidePopup);
+      closePopupButton.addEventListener('click', hidePopup);
+
+      // Close popup when clicking outside
+      resourcePopup.addEventListener('click', function(e) {
+        if (e.target === resourcePopup) {
+          hidePopup();
+        }
+      });
+
+      // Close popup with Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && resourcePopup.classList.contains('show')) {
+          hidePopup();
+        }
+      });
+
+      // Training Schedule Filter Functionality
       const filterButtons = document.querySelectorAll('.filter-btn');
       const scheduleItems = document.querySelectorAll('.schedule-item');
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
