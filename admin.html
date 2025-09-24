@@ -164,7 +164,7 @@
                 <form id="loginForm">
                     <div class="mb-3">
                         <label for="loginEmail" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="loginEmail" required>
+                        <input type="email" class="form-control" id="loginEmail" name="email" autocomplete="username" required>
                     </div>
                     <div class="mb-4">
                         <label for="loginPassword" class="form-label">Password</label>
@@ -231,22 +231,22 @@
             <div class="card-body">
                 <ul class="nav nav-pills justify-content-center" id="adminTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="events-tab" data-bs-toggle="pill" data-bs-target="#events" type="button">
+                        <button class="nav-link active" id="events-tab" data-bs-toggle="pill" data-bs-target="#events" type="button" data-tab="events">
                             <i class="bi bi-calendar-event"></i> Events
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="news-tab" data-bs-toggle="pill" data-bs-target="#news" type="button">
+                        <button class="nav-link" id="news-tab" data-bs-toggle="pill" data-bs-target="#news" type="button" data-tab="news">
                             <i class="bi bi-newspaper"></i> News
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="training-tab" data-bs-toggle="pill" data-bs-target="#training" type="button">
+                        <button class="nav-link" id="training-tab" data-bs-toggle="pill" data-bs-target="#training" type="button" data-tab="training">
                             <i class="bi bi-mortarboard"></i> Training Sessions
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="resources-tab" data-bs-toggle="pill" data-bs-target="#resources" type="button">
+                        <button class="nav-link" id="resources-tab" data-bs-toggle="pill" data-bs-target="#resources" type="button" data-tab="resources">
                             <i class="bi bi-folder"></i> Resources
                         </button>
                     </li>
@@ -259,7 +259,7 @@
             <!-- Events Tab -->
             <div class="tab-pane fade show active" id="events" role="tabpanel">
                 <div class="admin-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center px-4">
                         <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Events Management</h5>
                         <button class="btn btn-primary" onclick="showEventForm()">
                             <i class="bi bi-plus-lg"></i> Add Event
@@ -295,7 +295,7 @@
             <!-- News Tab -->
             <div class="tab-pane fade" id="news" role="tabpanel">
                 <div class="admin-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center px-4">
                         <h5 class="mb-0"><i class="bi bi-newspaper"></i> News Management</h5>
                         <button class="btn btn-primary" onclick="showNewsForm()">
                             <i class="bi bi-plus-lg"></i> Add News
@@ -339,7 +339,7 @@
             <!-- Training Sessions Tab -->
             <div class="tab-pane fade" id="training" role="tabpanel">
                 <div class="admin-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center px-4">
                         <h5 class="mb-0"><i class="bi bi-mortarboard"></i> Training Sessions</h5>
                         <button class="btn btn-primary" onclick="showTrainingForm()">
                             <i class="bi bi-plus-lg"></i> Add Training
@@ -375,7 +375,7 @@
             <!-- Resources Tab -->
             <div class="tab-pane fade" id="resources" role="tabpanel">
                 <div class="admin-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center px-4">
                         <h5 class="mb-0"><i class="bi bi-folder"></i> Resources</h5>
                         <button class="btn btn-primary" onclick="showResourceForm()">
                             <i class="bi bi-plus-lg"></i> Add Resource
@@ -387,7 +387,7 @@
                                 <thead>
                                     <tr>
                                         <th>Resource Title</th>
-                                        <th>Type</th>
+                                        <th>Collection</th>
                                         <th>Date</th>
                                         <th>Actions</th>
                                     </tr>
@@ -653,41 +653,87 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="resourceType" class="form-label">Type</label>
-                                    <select class="form-select" id="resourceType">
-                                        <option value="document">Document</option>
-                                        <option value="video">Video</option>
-                                        <option value="link">Link</option>
-                                        <option value="book">Book</option>
+                                    <label for="resourceSource" class="form-label">Collection *</label>
+                                    <select class="form-select" id="resourceSource" required>
+                                        <option value="template">Templates</option>
+                                        <option value="theory">Theory &amp; Skills</option>
+                                        <option value="analytics">Analytics &amp; Data</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="resourceFileType" class="form-label">File Type</label>
+                                    <select class="form-select" id="resourceFileType">
+                                        <option value="pdf">PDF</option>
+                                        <option value="doc">Document</option>
+                                        <option value="sheet">Spreadsheet</option>
+                                        <option value="notion">Notion</option>
+                                        <option value="link">Link</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="resourceDifficulty" class="form-label">Difficulty</label>
+                                    <select class="form-select" id="resourceDifficulty">
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="resourceEstimatedTime" class="form-label">Estimated Time (mins)</label>
+                                    <input type="number" min="0" class="form-control" id="resourceEstimatedTime" placeholder="e.g., 30">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="resourceCategory" class="form-label">Category</label>
-                                    <input type="text" class="form-control" id="resourceCategory" placeholder="e.g., Debate Techniques">
+                                    <label for="resourceUrl" class="form-label">Primary URL *</label>
+                                    <input type="url" class="form-control" id="resourceUrl" placeholder="https://..." required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="resourceAccess" class="form-label">Access Level</label>
-                                    <select class="form-select" id="resourceAccess">
-                                        <option value="public">Public</option>
-                                        <option value="members">Members Only</option>
-                                        <option value="varsity">Varsity Only</option>
-                                    </select>
+                                    <label for="resourceDownloadUrl" class="form-label">Download URL</label>
+                                    <input type="url" class="form-control" id="resourceDownloadUrl" placeholder="https://...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="resourceFileSize" class="form-label">File Size</label>
+                                    <input type="text" class="form-control" id="resourceFileSize" placeholder="e.g., 2.5 MB">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="resourceCreatedBy" class="form-label">Contributor</label>
+                                    <input type="text" class="form-control" id="resourceCreatedBy" placeholder="e.g., Training Committee">
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="resourceUrl" class="form-label">File/Resource URL</label>
-                            <input type="url" class="form-control" id="resourceUrl" placeholder="https://...">
+                            <label for="resourceTags" class="form-label">Tags (comma separated)</label>
+                            <input type="text" class="form-control" id="resourceTags" placeholder="case building, weighing, judge prep">
                         </div>
                         <div class="mb-3">
                             <label for="resourceDescription" class="form-label">Description</label>
                             <textarea class="form-control" id="resourceDescription" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resourceActive" class="form-label">Status</label>
+                            <select class="form-select" id="resourceActive">
+                                <option value="true">Active</option>
+                                <option value="false">Hidden</option>
+                            </select>
                         </div>
                     </form>
                 </div>

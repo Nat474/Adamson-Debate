@@ -5,6 +5,13 @@ class AdminPanel {
         this.currentTab = 'events';
         this.currentEditId = null;
         this.currentUser = null;
+        this.resourceSources = [
+            { key: 'template', label: 'Templates', table: 'resource_template' },
+            { key: 'theory', label: 'Theory & Skills', table: 'resource_theory' },
+            { key: 'analytics', label: 'Analytics & Data', table: 'resource_analytics' }
+        ];
+        this.currentResourceTable = null;
+        this.currentResourceSource = null;
         this.init();
     }
 
@@ -380,7 +387,7 @@ class AdminPanel {
         document.getElementById('eventLink').value = event.link || '';
 
         if (event.event_date) {
-            document.getElementById('eventDate').value = new Date(event.event_date).toISOString().slice(0, 16);
+            document.getElementById('eventDate').value = this.formatDateForInput(event.event_date);
         }
 
         document.getElementById('eventModalTitle').textContent = 'Edit Event';
@@ -617,17 +624,39 @@ class AdminPanel {
     async handleTrainingSubmit(e) {
         e.preventDefault();
 
+        const materialsInput = document.getElementById('trainingMaterials').value || '';
+        const parsedMaterials = materialsInput
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item.length > 0);
+
+        const durationValue = parseInt(document.getElementById('trainingDuration').value, 10);
+        const maxParticipantsValue = parseInt(document.getElementById('trainingMaxParticipants').value, 10);
+
         const trainingData = {
             title: document.getElementById('trainingTitle').value,
             description: document.getElementById('trainingDescription').value,
             location: document.getElementById('trainingLocation').value,
             session_date: document.getElementById('trainingDate').value ? new Date(document.getElementById('trainingDate').value).toISOString() : null,
-            instructor: document.getElementById('trainingTrainer').value,
-            duration: parseInt(document.getElementById('trainingDuration').value) || null,
-            level: document.getElementById('trainingLevel').value,
-            max_participants: parseInt(document.getElementById('trainingMaxParticipants').value) || null,
-            materials: document.getElementById('trainingMaterials').value
+            trainer: document.getElementById('trainingTrainer').value,
+            duration_minutes: Number.isNaN(durationValue) ? null : durationValue,
+            skill_level: document.getElementById('trainingLevel').value,
+            max_participants: Number.isNaN(maxParticipantsValue) ? null : maxParticipantsValue,
+            materials: parsedMaterials,
+            updated_by: this.currentUser?.id || null
         };
+
+        if (!parsedMaterials.length) {
+            trainingData.materials = [];
+        }
+
+        if (!this.currentEditId && this.currentUser?.id) {
+            trainingData.created_by = this.currentUser.id;
+        }
+
+        if (!trainingData.updated_by) {
+            delete trainingData.updated_by;
+        }
 
         try {
             let result;
@@ -653,6 +682,66 @@ class AdminPanel {
         }
     }
 
+    async editTraining(id) {
+        try {
+            const { data, error } = await this.supabase
+                .from('training_sessions')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) throw error;
+
+            this.currentEditId = id;
+            this.populateTrainingForm(data);
+            document.getElementById('trainingModalTitle').textContent = 'Edit Training Session';
+            new bootstrap.Modal(document.getElementById('trainingModal')).show();
+        } catch (error) {
+            console.error('Error loading training session for edit:', error);
+            this.showToast('Failed to load training session', 'error');
+        }
+    }
+
+    populateTrainingForm(session) {
+        document.getElementById('trainingTitle').value = session.title || '';
+        document.getElementById('trainingDescription').value = session.description || '';
+        document.getElementById('trainingLocation').value = session.location || '';
+        document.getElementById('trainingTrainer').value = session.trainer || '';
+        document.getElementById('trainingDuration').value = session.duration_minutes ?? '';
+        document.getElementById('trainingLevel').value = session.skill_level || 'beginner';
+        document.getElementById('trainingMaxParticipants').value = session.max_participants ?? '';
+
+        const materialsValue = Array.isArray(session.materials)
+            ? session.materials.join(', ')
+            : (session.materials || '');
+        document.getElementById('trainingMaterials').value = materialsValue;
+
+        if (session.session_date) {
+            document.getElementById('trainingDate').value = this.formatDateForInput(session.session_date);
+        }
+
+        document.getElementById('trainingModalTitle').textContent = 'Edit Training Session';
+    }
+
+    async deleteTraining(id) {
+        if (!confirm('Are you sure you want to delete this training session?')) return;
+
+        try {
+            const { error } = await this.supabase
+                .from('training_sessions')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+
+            this.showToast('Training session deleted successfully', 'success');
+            await this.loadTrainingSessions();
+        } catch (error) {
+            console.error('Error deleting training session:', error);
+            this.showToast('Failed to delete training session', 'error');
+        }
+    }
+
     // Resources Management
     async loadResources() {
         try {
@@ -661,14 +750,85 @@ class AdminPanel {
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            this.renderResourcesTable(data || []);
+            if (error) {
+                if (this.isMissingTableError(error)) {
+                    await this.loadLegacyResources();
+                    return;
+                }
+                throw error;
+            }
+
+            const normalized = (data || []).map(item =>
+                this.normalizeResourceRecord(item, {
+                    table: 'resources',
+                    key: item.resource_type || item.category || 'general'
+                })
+            );
+
+            this.renderResourcesTable(normalized);
         } catch (error) {
             console.error('Error loading resources:', error);
             this.showToast('Failed to load resources', 'error');
-            // Show empty state on error
             this.renderResourcesTable([]);
         }
+    }
+
+    async loadLegacyResources() {
+        const aggregated = [];
+
+        for (const source of this.resourceSources) {
+            try {
+                const { data, error } = await this.supabase
+                    .from(source.table)
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                (data || []).forEach(item => {
+                    aggregated.push(this.normalizeResourceRecord(item, source));
+                });
+            } catch (error) {
+                console.warn(`Error loading resources from ${source.table}:`, error);
+            }
+        }
+
+        if (aggregated.length === 0) {
+            this.renderResourcesTable([]);
+            return;
+        }
+
+        aggregated.sort((a, b) => {
+            const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return bTime - aTime;
+        });
+
+        this.renderResourcesTable(aggregated);
+    }
+
+    normalizeResourceRecord(resource, source) {
+        const sourceKey = source?.key || resource?.resource_type || resource?.category || 'general';
+
+        let normalizedTags = [];
+        if (Array.isArray(resource.tags)) {
+            normalizedTags = resource.tags;
+        } else if (typeof resource.tags === 'string' && resource.tags.trim().length > 0) {
+            const cleaned = resource.tags.replace(/[{}]/g, '');
+            normalizedTags = cleaned.split(',').map(tag => tag.trim()).filter(Boolean);
+        }
+
+        return {
+            ...resource,
+            category: resource.category || sourceKey,
+            file_type: resource.file_type || resource.type || null,
+            tags: normalizedTags,
+            difficulty_level: resource.difficulty_level || 'beginner',
+            estimated_time: resource.estimated_time ?? null,
+            is_active: typeof resource.is_active === 'boolean' ? resource.is_active : true,
+            _table: source?.table || 'resources',
+            _source: sourceKey
+        };
     }
 
     renderResourcesTable(resources) {
@@ -692,16 +852,21 @@ class AdminPanel {
         }
 
         resources.forEach(resource => {
+            const collectionBadge = this.formatResourceSource(resource._source || resource.resource_type || resource.category);
+            const fileTypeBadge = this.formatFileType(resource.file_type);
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${resource.title}</td>
-                <td><span class="badge bg-info">${resource.type || 'General'}</span></td>
-                <td>${new Date(resource.created_at).toLocaleDateString()}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editResource('${resource.id}')">
+                    <span class="badge bg-info">${collectionBadge}</span>
+                    ${fileTypeBadge ? `<span class="badge bg-secondary ms-1">${fileTypeBadge}</span>` : ''}
+                </td>
+                <td>${resource.created_at ? new Date(resource.created_at).toLocaleDateString() : 'N/A'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editResource('${resource._table}', '${resource.id}')">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteResource('${resource.id}')">
+                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteResource('${resource._table}', '${resource.id}')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </td>
@@ -713,25 +878,57 @@ class AdminPanel {
     async handleResourceSubmit(e) {
         e.preventDefault();
 
+        const sourceValue = document.getElementById('resourceSource').value;
+        const source = this.getResourceSourceByKey(sourceValue);
+        const tagsInput = document.getElementById('resourceTags').value || '';
+        const parsedTags = tagsInput
+            .split(',')
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0);
+        const estimatedTimeValue = parseInt(document.getElementById('resourceEstimatedTime').value, 10);
+
+        const activeSourceKey = source ? source.key : (this.currentResourceSource || sourceValue || 'general');
+        let tableName;
+
+        if (this.currentEditId) {
+            tableName = this.currentResourceTable || (source ? source.table : 'resources');
+        } else {
+            if (!source) {
+                this.showToast('Please choose a valid collection for the resource', 'error');
+                return;
+            }
+            tableName = source.table;
+        }
+
         const resourceData = {
             title: document.getElementById('resourceTitle').value,
             description: document.getElementById('resourceDescription').value,
-            type: document.getElementById('resourceType').value,
-            category: document.getElementById('resourceCategory').value,
-            access_level: document.getElementById('resourceAccess').value,
-            file_url: document.getElementById('resourceUrl').value
+            category: activeSourceKey,
+            file_type: document.getElementById('resourceFileType').value || null,
+            file_url: document.getElementById('resourceUrl').value,
+            download_url: document.getElementById('resourceDownloadUrl').value || null,
+            file_size: document.getElementById('resourceFileSize').value || null,
+            tags: parsedTags,
+            difficulty_level: document.getElementById('resourceDifficulty').value,
+            estimated_time: Number.isNaN(estimatedTimeValue) ? null : estimatedTimeValue,
+            created_by: document.getElementById('resourceCreatedBy').value || null,
+            is_active: document.getElementById('resourceActive').value === 'true'
         };
+
+        if (tableName === 'resources') {
+            resourceData.resource_type = activeSourceKey;
+        }
 
         try {
             let result;
             if (this.currentEditId) {
                 result = await this.supabase
-                    .from('resources')
+                    .from(tableName)
                     .update(resourceData)
                     .eq('id', this.currentEditId);
             } else {
                 result = await this.supabase
-                    .from('resources')
+                    .from(tableName)
                     .insert([resourceData]);
             }
 
@@ -746,7 +943,127 @@ class AdminPanel {
         }
     }
 
+    async editResource(tableName, id) {
+        try {
+            const { data, error } = await this.supabase
+                .from(tableName)
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) throw error;
+
+            this.currentEditId = id;
+            this.currentResourceTable = tableName;
+            this.currentResourceSource = this.getResourceSourceByTable(tableName)?.key || data.resource_type || data.category || 'general';
+            this.populateResourceForm(data, tableName);
+            document.getElementById('resourceModalTitle').textContent = 'Edit Resource';
+            new bootstrap.Modal(document.getElementById('resourceModal')).show();
+        } catch (error) {
+            console.error('Error loading resource for edit:', error);
+            this.showToast('Failed to load resource', 'error');
+        }
+    }
+
+    populateResourceForm(resource, tableName) {
+        const source = this.getResourceSourceByTable(tableName);
+        const sourceKey = source?.key || resource.resource_type || resource.category || 'template';
+
+        this.currentResourceSource = sourceKey;
+        document.getElementById('resourceTitle').value = resource.title || '';
+        document.getElementById('resourceDescription').value = resource.description || '';
+        document.getElementById('resourceSource').value = sourceKey;
+        document.getElementById('resourceSource').disabled = true;
+        document.getElementById('resourceFileType').value = resource.file_type || 'pdf';
+        document.getElementById('resourceUrl').value = resource.file_url || '';
+        document.getElementById('resourceDownloadUrl').value = resource.download_url || '';
+        document.getElementById('resourceFileSize').value = resource.file_size || '';
+        document.getElementById('resourceDifficulty').value = resource.difficulty_level || 'beginner';
+        document.getElementById('resourceEstimatedTime').value = resource.estimated_time ?? '';
+        document.getElementById('resourceTags').value = Array.isArray(resource.tags) ? resource.tags.join(', ') : (resource.tags || '');
+        document.getElementById('resourceCreatedBy').value = resource.created_by || '';
+        document.getElementById('resourceActive').value = resource.is_active === false ? 'false' : 'true';
+    }
+
+    async deleteResource(tableName, id) {
+        if (!confirm('Are you sure you want to delete this resource?')) return;
+
+        try {
+            const { error } = await this.supabase
+                .from(tableName)
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+
+            this.showToast('Resource deleted successfully', 'success');
+            await this.loadResources();
+        } catch (error) {
+            console.error('Error deleting resource:', error);
+            this.showToast('Failed to delete resource', 'error');
+        }
+    }
+
+    isMissingTableError(error) {
+        if (!error) return false;
+        const message = `${error.message || ''} ${error.details || ''}`.toLowerCase();
+        return (
+            error.code === 'PGRST116' ||
+            error.code === 'PGRST205' ||
+            error.code === '42P01' ||
+            error.status === 404 ||
+            message.includes('does not exist') ||
+            message.includes('not found')
+        );
+    }
+
+    getResourceSourceByKey(key) {
+        if (!key) return null;
+        return this.resourceSources.find(source => source.key === key) || null;
+    }
+
+    getResourceSourceByTable(tableName) {
+        if (!tableName) return null;
+        return this.resourceSources.find(source => source.table === tableName) || null;
+    }
+
+
     // Utility Functions
+    formatDateForInput(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+        return date.toISOString().slice(0, 16);
+    }
+
+    formatResourceSource(key) {
+        if (!key) {
+            return 'General';
+        }
+        const source = this.getResourceSourceByKey(key);
+        if (source) {
+            return source.label;
+        }
+        const normalized = key.toString().trim();
+        if (!normalized) {
+            return 'General';
+        }
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+    }
+
+    formatFileType(fileType) {
+        if (!fileType) {
+            return '';
+        }
+        const normalized = fileType.toString().trim();
+        if (!normalized) {
+            return '';
+        }
+        return normalized.toUpperCase();
+    }
+
     generateSlug(text) {
         return text.toLowerCase()
             .replace(/[^\w ]+/g, '')
@@ -756,7 +1073,28 @@ class AdminPanel {
     resetForm() {
         this.currentEditId = null;
         this.currentEditCategory = null;
+        this.currentResourceTable = null;
+        this.currentResourceSource = null;
         document.querySelectorAll('.modal form').forEach(form => form.reset());
+
+        const defaultSource = this.resourceSources?.[0]?.key || 'template';
+        const resourceSource = document.getElementById('resourceSource');
+        if (resourceSource) {
+            resourceSource.disabled = false;
+            resourceSource.value = defaultSource;
+        }
+        const resourceDifficulty = document.getElementById('resourceDifficulty');
+        if (resourceDifficulty) {
+            resourceDifficulty.value = 'beginner';
+        }
+        const resourceActive = document.getElementById('resourceActive');
+        if (resourceActive) {
+            resourceActive.value = 'true';
+        }
+        const resourceFileType = document.getElementById('resourceFileType');
+        if (resourceFileType) {
+            resourceFileType.value = 'pdf';
+        }
     }
 
     showToast(message, type = 'info') {
@@ -853,7 +1191,27 @@ function showTrainingForm() {
 
 function showResourceForm() {
     adminPanel.currentEditId = null;
+    adminPanel.currentResourceTable = null;
+    adminPanel.currentResourceSource = null;
     document.getElementById('resourceModalTitle').textContent = 'Add Resource';
+    const defaultSource = adminPanel?.resourceSources?.[0]?.key || 'template';
+    const sourceSelect = document.getElementById('resourceSource');
+    if (sourceSelect) {
+        sourceSelect.disabled = false;
+        sourceSelect.value = defaultSource;
+    }
+    const difficultySelect = document.getElementById('resourceDifficulty');
+    if (difficultySelect) {
+        difficultySelect.value = 'beginner';
+    }
+    const fileTypeSelect = document.getElementById('resourceFileType');
+    if (fileTypeSelect) {
+        fileTypeSelect.value = 'pdf';
+    }
+    const statusSelect = document.getElementById('resourceActive');
+    if (statusSelect) {
+        statusSelect.value = 'true';
+    }
     new bootstrap.Modal(document.getElementById('resourceModal')).show();
 }
 
@@ -896,6 +1254,6 @@ window.adminPanel = {
     deleteNews: (id, category) => adminPanel.deleteNews(id, category),
     editTraining: (id) => adminPanel.editTraining(id),
     deleteTraining: (id) => adminPanel.deleteTraining(id),
-    editResource: (id) => adminPanel.editResource(id),
-    deleteResource: (id) => adminPanel.deleteResource(id)
+    editResource: (table, id) => adminPanel.editResource(table, id),
+    deleteResource: (table, id) => adminPanel.deleteResource(table, id)
 };

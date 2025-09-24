@@ -1925,9 +1925,7 @@ section,
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
-.starter-section {
-  /* Add your styles here */
-}
+/* Placeholder removed: .starter-section had no rules */
 
 /*--------------------------------------------------------------
 # Blog Posts Section
@@ -3007,7 +3005,9 @@ section,
 }
 
 .scoring-breakdown {
-  space-y: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .score-item {
@@ -3328,8 +3328,6 @@ section,
     font-size: 0.8rem;
   }
 }
-}
-
 .update-item {
   padding: 0.8rem 0;
   border-bottom: 1px solid #e5e7eb;

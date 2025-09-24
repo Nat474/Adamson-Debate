@@ -450,19 +450,19 @@
           </div>
           <div class="news-hero-stats" data-aos="fade-up" data-aos-delay="150">
             <div class="stat-card">
-              <span>Headline</span>
-              <strong>National Parliamentary Champions 2024</strong>
-              <span>Third consecutive title secured by AUDS Varsity.</span>
+              <span>Latest News</span>
+              <strong id="latestNewsTitle">Loading...</strong>
+              <span id="latestNewsExcerpt">Loading latest updates...</span>
             </div>
             <div class="stat-card">
               <span>Next Event</span>
-              <strong>Public Speaking Lab, Oct 22</strong>
-              <span>Hands-on workshop on persuasive delivery and cadence.</span>
+              <strong id="nextEventTitle">Loading...</strong>
+              <span id="nextEventDescription">Loading upcoming events...</span>
             </div>
             <div class="stat-card">
               <span>Community</span>
-              <strong>9 Active Outreach Projects</strong>
-              <span>Partner schools engaged across Metro Manila.</span>
+              <strong id="communityStats">Active Community</strong>
+              <span id="communityDescription">Engaging students across Metro Manila.</span>
             </div>
           </div>
         </div>
@@ -471,17 +471,27 @@
 
     <section class="news-feature section" id="news-feed">
       <div class="container">
-        <div class="featured-article" data-aos="fade-up">
+        <div id="featuredArticle" class="featured-article" data-aos="fade-up" style="display: none;">
           <div class="featured-media">
-            <img src="assets/img/blog/blog-1.jpg" alt="Adamson Debate Society team celebrating championship">
+            <img id="featuredImage" src="assets/img/blog/blog-1.jpg" alt="Featured story">
           </div>
           <div class="featured-copy">
-            <span class="news-tag"><i class="bi bi-trophy"></i> Championship</span>
-            <h2>Adamson Debate Society Wins National Parliamentary Championship 2024</h2>
-            <p>Our varsity squad captured its third consecutive national title with a unanimous panel decision in the grand finals, showcasing strategic depth and polished delivery against the top universities in the country.</p>
+            <span id="featuredTag" class="news-tag"><i class="bi bi-newspaper"></i> Featured</span>
+            <h2 id="featuredTitle">Featured Story</h2>
+            <p id="featuredExcerpt">Loading featured content...</p>
             <div class="news-hero-actions">
-              <a class="btn-cta primary" href="#">Read Full Story</a>
-              <a class="btn-cta ghost" href="#events-board">View Celebration Events</a>
+              <a id="featuredReadMore" class="btn-cta primary" href="#">Read Full Story</a>
+              <a class="btn-cta ghost" href="#events-board">View Events</a>
+            </div>
+          </div>
+        </div>
+        <div id="noFeaturedContent" class="featured-article" data-aos="fade-up">
+          <div class="featured-copy" style="padding: 3rem; text-align: center;">
+            <span class="news-tag"><i class="bi bi-newspaper"></i> News</span>
+            <h2>No Featured Stories Available</h2>
+            <p>Check back soon for the latest news and updates from the Adamson Debate Society.</p>
+            <div class="news-hero-actions">
+              <a class="btn-cta ghost" href="#events-board">View Upcoming Events</a>
             </div>
           </div>
         </div>
@@ -499,39 +509,15 @@
             <span class="tab-pill">Tournaments</span>
           </div>
         </div>
-        <div class="news-grid">
-          <article class="news-card" data-aos="fade-up" data-aos-delay="50">
-            <img src="assets/img/blog/blog-3.jpg" alt="Coach guiding students during training">
+        <div id="newsGrid" class="news-grid">
+          <!-- News articles will be loaded dynamically from Supabase -->
+          <div class="news-card" style="padding: 2rem; text-align: center; border: 2px dashed #e2e8f0;">
             <div class="news-card-body">
-              <span class="news-tag"><i class="bi bi-lightning-charge"></i> Training</span>
-              <h3>New Program: Advanced Argumentation Techniques</h3>
-              <p>Weekly labs with Prof. David Chen now cover layered weighing, collapsing strategies, and judge calibration drills.</p>
+              <span class="news-tag"><i class="bi bi-newspaper"></i> News</span>
+              <h3>No News Articles Available</h3>
+              <p>Check the admin panel to add news articles and updates.</p>
             </div>
-          </article>
-          <article class="news-card" data-aos="fade-up" data-aos-delay="100">
-            <img src="assets/img/blog/blog-4.jpg" alt="Collage of debate alumni at work">
-            <div class="news-card-body">
-              <span class="news-tag"><i class="bi bi-people"></i> Alumni</span>
-              <h3>Alumni Spotlight: Where Are They Now?</h3>
-              <p>Discover how former AUDS debaters lead in law, policy, tech, and education while mentoring current members.</p>
-            </div>
-          </article>
-          <article class="news-card" data-aos="fade-up" data-aos-delay="150">
-            <img src="assets/img/blog/blog-5.jpg" alt="Facilitators seen with high school students">
-            <div class="news-card-body">
-              <span class="news-tag"><i class="bi bi-heart"></i> Outreach</span>
-              <h3>Community Outreach: Debate Workshops for High Schools</h3>
-              <p>Volunteer mentors hosted back-to-back introductory debate sessions with partner campuses across Manila.</p>
-            </div>
-          </article>
-          <article class="news-card" data-aos="fade-up" data-aos-delay="200">
-            <img src="assets/img/blog/blog-6.jpg" alt="International delegates in discussion">
-            <div class="news-card-body">
-              <span class="news-tag"><i class="bi bi-globe"></i> Summit</span>
-              <h3>AUDS Hosts International Debate Summit</h3>
-              <p>Delegates from 15 countries gathered at Adamson University for three days of panels, scrimmages, and motion clinics.</p>
-            </div>
-          </article>
+          </div>
         </div>
       </div>
     </section>
@@ -619,6 +605,303 @@
 
   <script src="assets/js/supabase-integration.js"></script>
 
+  <script>
+    (function () {
+      const supabaseClient = window.supabaseClient || null;
+      const debateDBInstance = window.debateDB || null;
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        if (!supabaseClient || !debateDBInstance) {
+          console.error('Supabase client not initialized for news page');
+          applyFallbackContent();
+          return;
+        }
+
+        try {
+          await fetchHeroStats();
+          await fetchFeaturedArticle();
+          await fetchNewsArticles();
+          console.log('News & Events dynamic content loaded');
+        } catch (error) {
+          console.error('Error loading News & Events content:', error);
+          applyFallbackContent();
+        }
+      });
+
+      async function fetchHeroStats() {
+        if (!debateDBInstance) {
+          applyFallbackHeroStats();
+          return;
+        }
+
+        try {
+          const latestNewsItems = await debateDBInstance.getAllNews(1);
+          const latestNews = Array.isArray(latestNewsItems) ? latestNewsItems[0] : null;
+
+          const upcomingEvents = await debateDBInstance.getEvents(true, 1);
+          const nextEvent = Array.isArray(upcomingEvents) ? upcomingEvents[0] : null;
+
+          const latestNewsTitle = document.getElementById('latestNewsTitle');
+          const latestNewsExcerpt = document.getElementById('latestNewsExcerpt');
+          const nextEventTitle = document.getElementById('nextEventTitle');
+          const nextEventDescription = document.getElementById('nextEventDescription');
+
+          if (latestNewsTitle) {
+            latestNewsTitle.textContent = latestNews?.title || 'No recent news';
+          }
+
+          if (latestNewsExcerpt) {
+            const excerpt = latestNews?.excerpt || (latestNews?.content ? `${latestNews.content.substring(0, 150)}...` : 'Stay tuned for updates.');
+            latestNewsExcerpt.textContent = excerpt;
+          }
+
+          if (nextEventTitle) {
+            nextEventTitle.textContent = nextEvent?.title || 'No upcoming events';
+          }
+
+          if (nextEventDescription) {
+            const eventDescription = nextEvent?.short_description || nextEvent?.description || 'Check back for new events.';
+            nextEventDescription.textContent = eventDescription;
+          }
+
+          const communityStats = document.getElementById('communityStats');
+          const communityDescription = document.getElementById('communityDescription');
+
+          if (communityStats) {
+            communityStats.textContent = 'Active Community';
+          }
+
+          if (communityDescription) {
+            communityDescription.textContent = 'Engaging students across Metro Manila.';
+          }
+        } catch (error) {
+          console.error('Error fetching hero stats:', error);
+          applyFallbackHeroStats();
+        }
+      }
+
+      async function fetchFeaturedArticle() {
+        if (!debateDBInstance) {
+          toggleFeaturedFallback(true);
+          return;
+        }
+
+        try {
+          const featuredArticles = await debateDBInstance.getAllNews(1);
+          const featuredArticle = Array.isArray(featuredArticles) ? featuredArticles[0] : null;
+          updateFeaturedArticle(featuredArticle);
+        } catch (error) {
+          console.error('Error fetching featured article:', error);
+          toggleFeaturedFallback(true);
+        }
+      }
+
+      function updateFeaturedArticle(article) {
+        const featuredArticleContainer = document.getElementById('featuredArticle');
+        const noFeaturedContent = document.getElementById('noFeaturedContent');
+
+        if (!featuredArticleContainer || !noFeaturedContent) {
+          return;
+        }
+
+        if (!article) {
+          toggleFeaturedFallback(true);
+          return;
+        }
+
+        toggleFeaturedFallback(false);
+
+        const featuredTitle = document.getElementById('featuredTitle');
+        const featuredExcerpt = document.getElementById('featuredExcerpt');
+        const featuredImage = document.getElementById('featuredImage');
+        const featuredTag = document.getElementById('featuredTag');
+        const featuredReadMore = document.getElementById('featuredReadMore');
+
+        if (featuredTitle) {
+          featuredTitle.textContent = article.title || 'Featured Story';
+        }
+
+        if (featuredExcerpt) {
+          const excerpt = article.excerpt || (article.content ? `${article.content.substring(0, 200)}...` : 'Full story coming soon.');
+          featuredExcerpt.textContent = excerpt;
+        }
+
+        if (featuredImage && article.image_url) {
+          featuredImage.src = article.image_url;
+          featuredImage.alt = article.title || 'Featured story image';
+        }
+
+        if (featuredTag) {
+          const category = article.category || article.type || 'Featured';
+          featuredTag.innerHTML = `<i class="bi bi-${resolveCategoryIcon(category)}"></i> ${category}`;
+        }
+
+        if (featuredReadMore) {
+          const externalLink = article.external_link || article.link || null;
+          const openNewsArticle = window.DebateSocietyApp?.openNewsArticle || window.openNewsArticle;
+
+          if (externalLink) {
+            featuredReadMore.href = externalLink;
+            featuredReadMore.target = '_blank';
+            featuredReadMore.rel = 'noopener';
+            featuredReadMore.onclick = null;
+          } else if (typeof openNewsArticle === 'function' && article.id) {
+            featuredReadMore.href = '#';
+            featuredReadMore.onclick = (event) => {
+              event.preventDefault();
+              openNewsArticle(article.id, article.type);
+            };
+          } else {
+            featuredReadMore.removeAttribute('href');
+            featuredReadMore.onclick = null;
+          }
+        }
+      }
+
+      function toggleFeaturedFallback(showFallback) {
+        const featuredArticleContainer = document.getElementById('featuredArticle');
+        const noFeaturedContent = document.getElementById('noFeaturedContent');
+
+        if (featuredArticleContainer) {
+          featuredArticleContainer.style.display = showFallback ? 'none' : 'block';
+        }
+        if (noFeaturedContent) {
+          noFeaturedContent.style.display = showFallback ? 'block' : 'none';
+        }
+      }
+
+      async function fetchNewsArticles() {
+        if (!debateDBInstance) {
+          displayNoNewsArticles();
+          return;
+        }
+
+        try {
+          const newsArticles = await debateDBInstance.getAllNews(10); // Get up to 10 articles
+          displayNewsArticles(newsArticles || []);
+        } catch (error) {
+          console.error('Error fetching news articles:', error);
+          displayNoNewsArticles();
+        }
+      }
+
+      function displayNewsArticles(articles) {
+        const newsGrid = document.getElementById('newsGrid');
+        if (!newsGrid) return;
+
+        if (!articles || articles.length === 0) {
+          displayNoNewsArticles();
+          return;
+        }
+
+        newsGrid.innerHTML = '';
+
+        articles.forEach((article, index) => {
+          const newsCard = createNewsCard(article, index);
+          newsGrid.appendChild(newsCard);
+        });
+      }
+
+      function createNewsCard(article, index) {
+        const newsCard = document.createElement('article');
+        newsCard.className = 'news-card';
+        newsCard.setAttribute('data-aos', 'fade-up');
+        newsCard.setAttribute('data-aos-delay', (index * 50 + 50).toString());
+
+        const categoryIcon = resolveCategoryIcon(article.category || article.type);
+        const imageUrl = article.image_url || 'assets/img/blog/blog-1.jpg';
+        const excerpt = article.excerpt || (article.content ? `${article.content.substring(0, 120)}...` : 'Read more about this story.');
+
+        newsCard.innerHTML = `
+          ${imageUrl ? `<img src="${imageUrl}" alt="${article.title || 'News article'}" loading="lazy">` : ''}
+          <div class="news-card-body">
+            <span class="news-tag"><i class="bi bi-${categoryIcon}"></i> ${article.category || article.type || 'News'}</span>
+            <h3>${article.title || 'Untitled Article'}</h3>
+            <p>${excerpt}</p>
+          </div>
+        `;
+
+        // Add click handler for reading full article
+        newsCard.style.cursor = 'pointer';
+        newsCard.addEventListener('click', () => {
+          const openNewsArticle = window.DebateSocietyApp?.openNewsArticle || window.openNewsArticle;
+
+          if (article.external_link) {
+            window.open(article.external_link, '_blank', 'noopener');
+          } else if (typeof openNewsArticle === 'function' && article.id) {
+            openNewsArticle(article.id, article.type);
+          } else {
+            console.log('Article details:', article);
+          }
+        });
+
+        return newsCard;
+      }
+
+      function displayNoNewsArticles() {
+        const newsGrid = document.getElementById('newsGrid');
+        if (!newsGrid) return;
+
+        newsGrid.innerHTML = `
+          <div class="news-card" style="padding: 2rem; text-align: center; border: 2px dashed #e2e8f0;">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-newspaper"></i> News</span>
+              <h3>No News Articles Available</h3>
+              <p>Check the admin panel to add news articles and updates.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function applyFallbackHeroStats() {
+        const latestNewsTitle = document.getElementById('latestNewsTitle');
+        const latestNewsExcerpt = document.getElementById('latestNewsExcerpt');
+        const nextEventTitle = document.getElementById('nextEventTitle');
+        const nextEventDescription = document.getElementById('nextEventDescription');
+        const communityStats = document.getElementById('communityStats');
+        const communityDescription = document.getElementById('communityDescription');
+
+        if (latestNewsTitle) {
+          latestNewsTitle.textContent = 'Welcome to AUDS';
+        }
+        if (latestNewsExcerpt) {
+          latestNewsExcerpt.textContent = 'Stay updated with our latest activities.';
+        }
+        if (nextEventTitle) {
+          nextEventTitle.textContent = 'Check Admin Panel';
+        }
+        if (nextEventDescription) {
+          nextEventDescription.textContent = 'Events will be updated soon.';
+        }
+        if (communityStats) {
+          communityStats.textContent = 'Growing Community';
+        }
+        if (communityDescription) {
+          communityDescription.textContent = 'Join our academic discourse.';
+        }
+      }
+
+      function applyFallbackContent() {
+        applyFallbackHeroStats();
+        toggleFeaturedFallback(true);
+        displayNoNewsArticles();
+      }
+
+      function resolveCategoryIcon(category) {
+        const icons = {
+          community: 'people',
+          training: 'mortarboard',
+          tournaments: 'trophy',
+          championship: 'trophy-fill',
+          default: 'newspaper'
+        };
+        return icons[category?.toLowerCase()] || icons.default;
+      }
+    })();
+  </script>
+
 </body>
 
 </html>
+
+
