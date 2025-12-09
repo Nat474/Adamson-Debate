@@ -14,132 +14,220 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- Cropper CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #2563eb;
-            --success-color: #16a34a;
-            --warning-color: #f59e0b;
-            --danger-color: #dc2626;
+            --bg: #f6f7fb;
+            --panel: #ffffff;
+            --panel-soft: #f0f2f7;
+            --muted: #6b7280;
+            --primary: #2563eb;
+            --primary-strong: #1d4ed8;
+            --accent: #10b981;
+            --radius: 16px;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
             min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at 20% 20%, rgba(37,99,235,0.08), transparent 32%),
+                        radial-gradient(circle at 80% 0%, rgba(16,185,129,0.08), transparent 28%),
+                        var(--bg);
+            color: #0f172a;
         }
 
-        .admin-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 0;
+        .page-shell {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem 3rem;
         }
 
-        .admin-container {
-            padding: 2rem 0;
+        .top-hero {
+            background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(16,185,129,0.08));
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 12px 30px rgba(15,23,42,0.12);
+        }
+
+        .hero-title {
+            font-weight: 700;
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .hero-sub {
+            color: var(--muted);
+            margin: 0.35rem 0 0;
+            font-size: 0.95rem;
+        }
+
+        .status-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .chip {
+            border-radius: 999px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #e2e8f0;
         }
 
         .admin-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            background: var(--panel);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: var(--radius);
+            box-shadow: 0 18px 36px rgba(15,23,42,0.12);
+            margin-bottom: 1.5rem;
         }
 
-        .admin-nav {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 1rem;
+        .card-header {
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            background: transparent;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .card-body {
+            background: transparent;
+        }
+
+        .nav-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            padding: 0;
         }
 
         .nav-pills .nav-link {
-            border-radius: 10px;
-            margin: 0 0.25rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            background: var(--panel-soft);
+            color: #0f172a;
+            font-weight: 600;
+            text-align: center;
+            padding: 0.75rem;
+            transition: all 0.2s ease;
         }
 
         .nav-pills .nav-link.active {
-            background: var(--primary-color);
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 10px 24px rgba(37,99,235,0.25);
+        }
+
+        .admin-header {
+            background: transparent;
+            border: none;
+            padding: 0 0 1rem;
+        }
+
+        .admin-container {
+            padding: 1rem 0 2rem;
         }
 
         .form-control, .form-select {
-            border-radius: 10px;
-            border: 2px solid rgba(37, 99, 235, 0.1);
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.07);
+            background: #fff;
+            color: #0f172a;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+            background: #fff;
         }
 
         .btn {
-            border-radius: 10px;
-            font-weight: 500;
-            padding: 0.6rem 1.5rem;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.2s ease;
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             border: none;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            color: #fff;
+            box-shadow: 0 12px 28px rgba(37,99,235,0.2);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        .btn-outline-secondary {
+            border-color: rgba(0,0,0,0.12);
+            color: #0f172a;
+        }
+
+        .btn-outline-secondary:hover {
+            background: rgba(37,99,235,0.06);
+            color: #0f172a;
         }
 
         .table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            background: var(--panel-soft);
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow-x: auto;
         }
 
-        .badge {
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
-            font-weight: 500;
+        table.table {
+            color: #0f172a;
         }
 
-        .loading {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        .alert {
-            border-radius: 10px;
-            border: none;
+        table.table thead {
+            color: #475569;
         }
 
         .modal-content {
-            border-radius: 20px;
-            border: none;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid rgba(0,0,0,0.06);
         }
 
         .modal-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 20px 20px 0 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
         }
 
-        @media (max-width: 768px) {
-            .admin-container {
-                padding: 1rem 0;
-            }
+        .badge {
+            border-radius: 12px;
+            padding: 0.35rem 0.75rem;
+        }
 
-            .nav-pills {
-                flex-direction: column;
+        #loginScreen {
+            background: radial-gradient(circle at 20% 20%, rgba(37,99,235,0.12), transparent 35%),
+                        radial-gradient(circle at 80% 0%, rgba(16,185,129,0.12), transparent 30%),
+                        #eef2ff;
+            padding: 1.25rem;
+        }
+
+        .login-card {
+            border-radius: 18px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .input-group .btn {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .tab-pane {
+            padding-top: 0.5rem;
+        }
+
+        @media (min-width: 992px) {
+            .page-shell {
+                padding: 2rem 2.25rem 3rem;
             }
         }
     </style>
@@ -147,27 +235,27 @@
 
 <body>
     <!-- Login Screen -->
-    <div id="loginScreen" class="position-fixed w-100 h-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 9999;">
-        <div class="card shadow-lg" style="max-width: 400px; width: 90%; border-radius: 20px; border: none;">
+    <div id="loginScreen" class="position-fixed w-100 h-100 d-flex align-items-center justify-content-center" style="background: radial-gradient(circle at 20% 20%, rgba(79,70,229,0.25), transparent 35%), radial-gradient(circle at 80% 0%, rgba(34,211,238,0.25), transparent 30%), #0b1020; z-index: 9999; padding: 1.25rem;">
+        <div class="card shadow-lg login-card" style="max-width: 420px; width: 95%; border-radius: 18px;">
             <div class="card-body p-4">
                 <div class="text-center mb-4">
                     <div class="mb-3">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#dc2626">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#22d3ee">
                             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
                             <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="white"/>
                         </svg>
                     </div>
-                    <h3 class="fw-bold text-dark">Admin Login</h3>
-                    <p class="text-muted mb-0">Adamson Debate Society</p>
+                    <h3 class="fw-bold text-white mb-1">Admin Login</h3>
+                    <p class="text-muted mb-0" style="color:#cbd5e1!important;">Adamson Debate Society</p>
                 </div>
 
                 <form id="loginForm">
                     <div class="mb-3">
-                        <label for="loginEmail" class="form-label">Email Address</label>
+                        <label for="loginEmail" class="form-label text-muted">Email Address</label>
                         <input type="email" class="form-control" id="loginEmail" name="email" autocomplete="username" required>
                     </div>
                     <div class="mb-4">
-                        <label for="loginPassword" class="form-label">Password</label>
+                        <label for="loginPassword" class="form-label text-muted">Password</label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="loginPassword" required autocomplete="current-password">
                             <button class="btn btn-outline-secondary" type="button" id="togglePassword" onclick="togglePasswordVisibility()">
@@ -189,13 +277,15 @@
                 </div>
 
                 <div class="text-center mt-3">
-                    <small class="text-muted">
+                    <small class="text-muted" style="color:#94a3b8!important;">
                         <i class="bi bi-shield-lock"></i> Secure Admin Access
                     </small>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="page-shell">
 
     <!-- Main Admin Interface (Hidden by default) -->
     <div id="adminInterface" class="d-none">
@@ -211,9 +301,6 @@
                     <p class="text-muted mb-0">Adamson Debate Society Management</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <span class="badge bg-success me-2">
-                        <i class="bi bi-check-circle"></i> Connected
-                    </span>
                     <span class="badge bg-info me-2">
                         <i class="bi bi-person-circle"></i> <span id="userEmail">admin@adamson.edu</span>
                     </span>
@@ -231,23 +318,23 @@
             <div class="card-body">
                 <ul class="nav nav-pills justify-content-center" id="adminTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="events-tab" data-bs-toggle="pill" data-bs-target="#events" type="button" data-tab="events">
-                            <i class="bi bi-calendar-event"></i> Events
+                        <button class="nav-link active" id="blog-tab" data-bs-toggle="pill" data-bs-target="#blog" type="button" data-tab="blog">
+                            <i class="bi bi-journal-text"></i> Blog
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="news-tab" data-bs-toggle="pill" data-bs-target="#news" type="button" data-tab="news">
-                            <i class="bi bi-newspaper"></i> News
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="training-tab" data-bs-toggle="pill" data-bs-target="#training" type="button" data-tab="training">
-                            <i class="bi bi-mortarboard"></i> Training Sessions
+                        <button class="nav-link" id="partners-tab" data-bs-toggle="pill" data-bs-target="#partners" type="button" data-tab="partners">
+                            <i class="bi bi-people"></i> Partners
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="resources-tab" data-bs-toggle="pill" data-bs-target="#resources" type="button" data-tab="resources">
                             <i class="bi bi-folder"></i> Resources
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="admins-tab" data-bs-toggle="pill" data-bs-target="#admins" type="button" data-tab="admins">
+                            <i class="bi bi-person-badge"></i> Admins
                         </button>
                     </li>
                 </ul>
@@ -256,77 +343,34 @@
 
         <!-- Tab Content -->
         <div class="tab-content" id="adminTabContent">
-            <!-- Events Tab -->
-            <div class="tab-pane fade show active" id="events" role="tabpanel">
+            <!-- Blog Tab -->
+            <div class="tab-pane fade show active" id="blog" role="tabpanel">
                 <div class="admin-card">
                     <div class="card-header d-flex justify-content-between align-items-center px-4">
-                        <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Events Management</h5>
-                        <button class="btn btn-primary" onclick="showEventForm()">
-                            <i class="bi bi-plus-lg"></i> Add Event
+                        <h5 class="mb-0"><i class="bi bi-journal-text"></i> Blog Management</h5>
+                        <button class="btn btn-primary" onclick="showBlogForm()">
+                            <i class="bi bi-plus-lg"></i> Add Blog Post
                         </button>
                     </div>
                     <div class="card-body">
-                        <div class="table-container">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Event Title</th>
-                                        <th>Location</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="eventsTable">
-                                    <tr>
-                                        <td colspan="4" class="text-center">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                            <p class="mt-2 mb-0">Loading events...</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- News Tab -->
-            <div class="tab-pane fade" id="news" role="tabpanel">
-                <div class="admin-card">
-                    <div class="card-header d-flex justify-content-between align-items-center px-4">
-                        <h5 class="mb-0"><i class="bi bi-newspaper"></i> News Management</h5>
-                        <button class="btn btn-primary" onclick="showNewsForm()">
-                            <i class="bi bi-plus-lg"></i> Add News
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <select class="form-select" id="newsCategory" onchange="loadNews()">
-                                <option value="all">All Categories</option>
-                                <option value="community">Community</option>
-                                <option value="training">Training</option>
-                                <option value="tournaments">Tournaments</option>
-                            </select>
-                        </div>
                         <div class="table-container">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Title</th>
                                         <th>Category</th>
+                                        <th>Author</th>
                                         <th>Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="newsTable">
+                                <tbody id="blogTable">
                                     <tr>
-                                        <td colspan="4" class="text-center">
+                                        <td colspan="5" class="text-center">
                                             <div class="spinner-border text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
-                                            <p class="mt-2 mb-0">Loading news...</p>
+                                            <p class="mt-2 mb-0">Loading blog posts...</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -336,13 +380,13 @@
                 </div>
             </div>
 
-            <!-- Training Sessions Tab -->
-            <div class="tab-pane fade" id="training" role="tabpanel">
+            <!-- Partners Tab -->
+            <div class="tab-pane fade" id="partners" role="tabpanel">
                 <div class="admin-card">
                     <div class="card-header d-flex justify-content-between align-items-center px-4">
-                        <h5 class="mb-0"><i class="bi bi-mortarboard"></i> Training Sessions</h5>
-                        <button class="btn btn-primary" onclick="showTrainingForm()">
-                            <i class="bi bi-plus-lg"></i> Add Training
+                        <h5 class="mb-0"><i class="bi bi-people"></i> Partnerships</h5>
+                        <button class="btn btn-primary" onclick="showPartnerForm()">
+                            <i class="bi bi-plus-lg"></i> Add Partner
                         </button>
                     </div>
                     <div class="card-body">
@@ -350,19 +394,18 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Session Title</th>
-                                        <th>Location</th>
-                                        <th>Date</th>
+                                        <th>Partner</th>
+                                        <th>Link</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="trainingTable">
+                                <tbody id="partnersTable">
                                     <tr>
-                                        <td colspan="4" class="text-center">
+                                        <td colspan="3" class="text-center">
                                             <div class="spinner-border text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
-                                            <p class="mt-2 mb-0">Loading training sessions...</p>
+                                            <p class="mt-2 mb-0">Loading partners...</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -386,15 +429,14 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Resource Title</th>
-                                        <th>Collection</th>
-                                        <th>Date</th>
+                                        <th>Title</th>
+                                        <th>Document</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="resourcesTable">
                                     <tr>
-                                        <td colspan="4" class="text-center">
+                                        <td colspan="3" class="text-center">
                                             <div class="spinner-border text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
@@ -407,232 +449,293 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Admins Tab -->
+            <div class="tab-pane fade" id="admins" role="tabpanel">
+                <div class="admin-card">
+                    <div class="card-header d-flex justify-content-between align-items-center px-4">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Admin Profiles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Position</th>
+                                        <th>Mobile</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminsTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 mb-0">Loading admins...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Event Modal -->
-    <div class="modal fade" id="eventModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+    <!-- Profile Completion Modal -->
+    <div class="modal fade" id="profileModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="profileModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalTitle">Add Event</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div>
+                        <h5 class="modal-title" id="profileModalTitle">Complete Your Admin Profile</h5>
+                        <small class="text-muted">We use this to verify admin activity.</small>
+                    </div>
                 </div>
                 <div class="modal-body">
-                    <form id="eventForm">
-                        <input type="hidden" id="eventId">
+                    <form id="profileForm">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="eventTitle" class="form-label">Event Title *</label>
-                                    <input type="text" class="form-control" id="eventTitle" required>
+                                    <label for="profileName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="profileName" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="eventDate" class="form-label">Event Date *</label>
-                                    <input type="datetime-local" class="form-control" id="eventDate" required>
+                                    <label for="profileEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="profileEmail" readonly>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="eventLocation" class="form-label">Location</label>
-                                    <input type="text" class="form-control" id="eventLocation">
+                                    <label for="profilePosition" class="form-label">Position</label>
+                                    <input type="text" class="form-control" id="profilePosition" placeholder="e.g., Administrator" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="eventOrganizer" class="form-label">Organizer</label>
-                                    <input type="text" class="form-control" id="eventOrganizer">
+                                    <label for="profileMobile" class="form-label">Mobile Number</label>
+                                    <input type="tel" class="form-control" id="profileMobile" placeholder="+63 900 000 0000" required>
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="eventShortDescription" class="form-label">Short Description</label>
-                            <textarea class="form-control" id="eventShortDescription" rows="2"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventDescription" class="form-label">Full Description</label>
-                            <textarea class="form-control" id="eventDescription" rows="4"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventLink" class="form-label">External Link</label>
-                            <input type="url" class="form-control" id="eventLink" placeholder="https://...">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="profileFacebook" class="form-label">Facebook URL</label>
+                                    <input type="url" class="form-control" id="profileFacebook" placeholder="https://facebook.com/yourprofile" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Profile Photo</label>
+                                    <div class="border rounded p-2 bg-light">
+                                        <div class="d-flex flex-column flex-md-row align-items-start gap-3">
+                                            <div class="flex-grow-1">
+                                                <input type="file" class="form-control form-control-sm" id="profilePhotoFile" accept="image/*" required style="max-width: 240px;">
+                                                <small class="text-muted">Upload an image, then crop before saving.</small>
+                                            </div>
+                                            <div class="position-relative bg-white" style="width: 160px; height: 160px; border: 1px dashed #e5e7eb; border-radius: 12px; overflow: hidden;">
+                                                <img id="profilePhotoPreview" src="" alt="Preview" class="w-100 h-100" style="object-fit: cover;">
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Square crop required.</small>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" id="profileCropResetBtn">Reset</button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="profileCropOpenBtn">Crop</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveEvent()">
-                        <span id="eventSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        Save Event
+                    <div class="text-start me-auto">
+                        <small class="text-muted">Required to access admin tools. Changes are saved to your profile.</small>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="profileSaveBtn">
+                        <span id="profileSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        <span id="profileSaveText">Save Profile</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- News Modal -->
-    <div class="modal fade" id="newsModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+    <!-- Photo Crop Modal -->
+    <div class="modal fade" id="photoCropModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newsModalTitle">Add News</h5>
+                    <h5 class="modal-title">Crop Profile Photo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="newsForm">
-                        <input type="hidden" id="newsId">
+                    <div class="d-flex justify-content-center">
+                        <div class="cropper-container border rounded" style="width: 100%; max-width: 720px; height: 520px; overflow: hidden; background: #f8fafc;">
+                            <img id="cropperImage" src="" alt="Crop source" style="width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; display: block; margin: 0 auto;">
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-3 mb-0 text-center">Aspect ratio locked to 1:1.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="cropperApplyBtn">Apply Crop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Modal -->
+    <div class="modal fade" id="blogModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blogModalTitle">Add Blog Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="blogForm">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="newsTitle" class="form-label">News Title *</label>
-                                    <input type="text" class="form-control" id="newsTitle" required>
+                                    <label class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="blogTitle" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="newsCategory" class="form-label">Category *</label>
-                                    <select class="form-select" id="newsCategorySelect" required>
-                                        <option value="">Select Category</option>
-                                        <option value="community">Community</option>
-                                        <option value="training">Training</option>
-                                        <option value="tournaments">Tournaments</option>
+                                    <label class="form-label">Category</label>
+                                    <input type="text" class="form-control" id="blogCategory" placeholder="Debate, Announcement..." required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Author</label>
+                                    <select class="form-select" id="blogAuthor" required>
+                                        <option value="">Select author</option>
+                                        <option value="admin">Admin (you)</option>
+                                        <option value="anonymous">Anonymous</option>
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Publish Date</label>
+                                    <input type="date" class="form-control" id="blogDate" required>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label for="newsAuthor" class="form-label">Author</label>
-                                    <input type="text" class="form-control" id="newsAuthor">
-                                </div>
-                            </div>
                             <div class="col-md-4">
-                                <div class="form-check mt-4">
-                                    <input class="form-check-input" type="checkbox" id="newsFeatured">
-                                    <label class="form-check-label" for="newsFeatured">
-                                        Featured Article
-                                    </label>
+                                <div class="mb-3">
+                                    <label class="form-label">Minutes to Read</label>
+                                    <input type="number" class="form-control" id="blogMinutesToRead" min="1" placeholder="5" required>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="newsImageUrl" class="form-label">Image URL</label>
-                            <input type="url" class="form-control" id="newsImageUrl" placeholder="https://...">
+                            <label class="form-label">Short Description</label>
+                            <input type="text" class="form-control" id="blogDescription" required>
                         </div>
                         <div class="mb-3">
-                            <label for="newsExcerpt" class="form-label">Excerpt</label>
-                            <textarea class="form-control" id="newsExcerpt" rows="2"></textarea>
+                            <label class="form-label">Body</label>
+                            <textarea class="form-control" id="blogBody" rows="4" required></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="newsContent" class="form-label">Content *</label>
-                            <textarea class="form-control" id="newsContent" rows="6" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newsLink" class="form-label">External Link</label>
-                            <input type="url" class="form-control" id="newsLink" placeholder="https://...">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Feature Image URL</label>
+                                    <div class="input-group">
+                                        <input type="url" class="form-control" id="blogPhoto" placeholder="https://">
+                                        <button class="btn btn-outline-secondary" type="button" id="blogUploadBtn">
+                                            <i class="bi bi-cloud-upload"></i> Upload
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Paste a link or upload to Cloudinary.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Share Link</label>
+                                    <input type="url" class="form-control" id="blogShare" placeholder="https://">
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveNews()">
-                        <span id="newsSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        Save News
-                    </button>
+                    <button type="submit" class="btn btn-primary" form="blogForm">Save</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Training Modal -->
-    <div class="modal fade" id="trainingModal" tabindex="-1">
+    <!-- Partner Modal -->
+    <div class="modal fade" id="partnerModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="trainingModalTitle">Add Training Session</h5>
+                    <h5 class="modal-title" id="partnerModalTitle">Add Partner</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="trainingForm">
-                        <input type="hidden" id="trainingId">
+                    <form id="partnerForm">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="trainingTitle" class="form-label">Session Title *</label>
-                                    <input type="text" class="form-control" id="trainingTitle" required>
+                                    <label class="form-label">Partner Name</label>
+                                    <input type="text" class="form-control" id="partnerName" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="trainingDate" class="form-label">Session Date *</label>
-                                    <input type="datetime-local" class="form-control" id="trainingDate" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="trainingDuration" class="form-label">Duration (mins)</label>
-                                    <input type="number" class="form-control" id="trainingDuration" value="60">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="trainingLevel" class="form-label">Skill Level</label>
-                                    <select class="form-select" id="trainingLevel">
-                                        <option value="beginner">Beginner</option>
-                                        <option value="intermediate">Intermediate</option>
-                                        <option value="advanced">Advanced</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="trainingMaxParticipants" class="form-label">Max Participants</label>
-                                    <input type="number" class="form-control" id="trainingMaxParticipants">
+                                    <label class="form-label">Website / Link</label>
+                                    <input type="url" class="form-control" id="partnerLink" placeholder="https://" required>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="trainingLocation" class="form-label">Location</label>
-                                    <input type="text" class="form-control" id="trainingLocation">
+                                    <label class="form-label">Logo URL</label>
+                                    <div class="input-group">
+                                        <input type="url" class="form-control" id="partnerLogo" placeholder="https://" required>
+                                        <button class="btn btn-outline-secondary" type="button" id="partnerUploadBtn">
+                                            <i class="bi bi-cloud-upload"></i> Upload
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Paste a logo link or upload to Cloudinary.</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="trainingTrainer" class="form-label">Trainer</label>
-                                    <input type="text" class="form-control" id="trainingTrainer">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="partnerDescription" rows="2" required></textarea>
                                 </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="trainingDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="trainingDescription" rows="4"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="trainingMaterials" class="form-label">Materials Needed (separate with commas)</label>
-                            <textarea class="form-control" id="trainingMaterials" rows="2" placeholder="Notebook, Pen, Laptop, etc."></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveTraining()">
-                        <span id="trainingSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        Save Training
-                    </button>
+                    <button type="submit" class="btn btn-primary" form="partnerForm">Save</button>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Resource Modal -->
     <div class="modal fade" id="resourceModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
@@ -643,106 +746,35 @@
                 </div>
                 <div class="modal-body">
                     <form id="resourceForm">
-                        <input type="hidden" id="resourceId">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="resourceTitle" class="form-label">Resource Title *</label>
+                                    <label class="form-label">Title</label>
                                     <input type="text" class="form-control" id="resourceTitle" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="resourceSource" class="form-label">Collection *</label>
-                                    <select class="form-select" id="resourceSource" required>
-                                        <option value="template">Templates</option>
-                                        <option value="theory">Theory &amp; Skills</option>
-                                        <option value="analytics">Analytics &amp; Data</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="resourceFileType" class="form-label">File Type</label>
-                                    <select class="form-select" id="resourceFileType">
-                                        <option value="pdf">PDF</option>
-                                        <option value="doc">Document</option>
-                                        <option value="sheet">Spreadsheet</option>
-                                        <option value="notion">Notion</option>
-                                        <option value="link">Link</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="resourceDifficulty" class="form-label">Difficulty</label>
-                                    <select class="form-select" id="resourceDifficulty">
-                                        <option value="beginner">Beginner</option>
-                                        <option value="intermediate">Intermediate</option>
-                                        <option value="advanced">Advanced</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="resourceEstimatedTime" class="form-label">Estimated Time (mins)</label>
-                                    <input type="number" min="0" class="form-control" id="resourceEstimatedTime" placeholder="e.g., 30">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="resourceUrl" class="form-label">Primary URL *</label>
-                                    <input type="url" class="form-control" id="resourceUrl" placeholder="https://..." required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="resourceDownloadUrl" class="form-label">Download URL</label>
-                                    <input type="url" class="form-control" id="resourceDownloadUrl" placeholder="https://...">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="resourceFileSize" class="form-label">File Size</label>
-                                    <input type="text" class="form-control" id="resourceFileSize" placeholder="e.g., 2.5 MB">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="resourceCreatedBy" class="form-label">Contributor</label>
-                                    <input type="text" class="form-control" id="resourceCreatedBy" placeholder="e.g., Training Committee">
+                                    <label class="form-label">Document</label>
+                                    <div class="input-group">
+                                        <input type="url" class="form-control" id="resourceFileUrl" placeholder="Cloudinary or Google Docs link" required>
+                                        <button class="btn btn-outline-secondary" type="button" id="resourceUploadBtn">
+                                            <i class="bi bi-cloud-upload"></i> Upload File
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Paste a link or upload; uploads go to Cloudinary.</small>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="resourceTags" class="form-label">Tags (comma separated)</label>
-                            <input type="text" class="form-control" id="resourceTags" placeholder="case building, weighing, judge prep">
-                        </div>
-                        <div class="mb-3">
-                            <label for="resourceDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="resourceDescription" rows="4"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="resourceActive" class="form-label">Status</label>
-                            <select class="form-select" id="resourceActive">
-                                <option value="true">Active</option>
-                                <option value="false">Hidden</option>
-                            </select>
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="resourceDescription" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveResource()">
-                        <span id="resourceSaveSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        Save Resource
-                    </button>
+                    <button type="submit" class="btn btn-primary" form="resourceForm">Save</button>
                 </div>
             </div>
         </div>
@@ -773,6 +805,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
     <script src="assets/js/admin-config.js"></script>
 </body>
 </html>
+
+

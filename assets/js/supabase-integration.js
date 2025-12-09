@@ -59,7 +59,7 @@ async function initializeHomePage() {
     }
 }
 
-// News & Events page initialization
+// Blog page initialization
 async function initializeNewsEventsPage() {
     try {
         // Load featured article

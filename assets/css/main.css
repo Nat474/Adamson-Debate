@@ -3360,7 +3360,7 @@ section,
   }
 }
 
-/* News & Events Page Styles */
+/* Blog Page Styles */
 .page-title {
   padding: 120px 0 60px 0;
   background: linear-gradient(135deg, var(--navy-blue) 0%, var(--accent-color) 100%);
@@ -5556,7 +5556,7 @@ section,
 
 
 /*--------------------------------------------------------------
-# Training Materials Page
+# Training Page
 ---------------------------------------------------------------*/
 .training-page .main {
   padding-top: 120px;

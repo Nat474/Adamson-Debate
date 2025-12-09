@@ -1,17 +1,21 @@
-// Admin Panel Configuration and Functionality
+﻿// Admin Panel Configuration and Functionality
 class AdminPanel {
     constructor() {
         this.supabase = null;
-        this.currentTab = 'events';
+        this.supabaseAdmin = null;
+        this.supabaseUrl = null;
+        this.currentTab = 'blog';
         this.currentEditId = null;
         this.currentUser = null;
-        this.resourceSources = [
-            { key: 'template', label: 'Templates', table: 'resource_template' },
-            { key: 'theory', label: 'Theory & Skills', table: 'resource_theory' },
-            { key: 'analytics', label: 'Analytics & Data', table: 'resource_analytics' }
-        ];
-        this.currentResourceTable = null;
-        this.currentResourceSource = null;
+        this.profileModal = null;
+        this.photoCropper = null;
+        this.photoCropModal = null;
+        this.croppedPhotoUrl = null;
+        this.croppedPhotoBlob = null;
+        this.blogs = [];
+        this.partners = [];
+        this.resourcesData = [];
+        this.adminsList = [];
         this.init();
     }
 
@@ -36,8 +40,9 @@ class AdminPanel {
                 }
             });
 
-            // Store service key for admin operations (we'll use this with the same client)
+            // Store service key for admin operations
             this.serviceKey = SUPABASE_SERVICE_KEY;
+            this.supabaseUrl = SUPABASE_URL;
 
             console.log('Supabase client initialized');
         } catch (error) {
@@ -62,32 +67,80 @@ class AdminPanel {
         });
 
         // Form submissions - only bind if elements exist
-        const eventForm = document.getElementById('eventForm');
-        if (eventForm) {
-            eventForm.addEventListener('submit', (e) => this.handleEventSubmit(e));
+        const blogForm = document.getElementById('blogForm');
+        if (blogForm) {
+            blogForm.addEventListener('submit', (e) => this.handleBlogSubmit(e));
         }
 
-        const newsForm = document.getElementById('newsForm');
-        if (newsForm) {
-            newsForm.addEventListener('submit', (e) => this.handleNewsSubmit(e));
-        }
-
-        const trainingForm = document.getElementById('trainingForm');
-        if (trainingForm) {
-            trainingForm.addEventListener('submit', (e) => this.handleTrainingSubmit(e));
+        const partnerForm = document.getElementById('partnerForm');
+        if (partnerForm) {
+            partnerForm.addEventListener('submit', (e) => this.handlePartnerSubmit(e));
         }
 
         const resourceForm = document.getElementById('resourceForm');
         if (resourceForm) {
             resourceForm.addEventListener('submit', (e) => this.handleResourceSubmit(e));
         }
+        const resourceUploadBtn = document.getElementById('resourceUploadBtn');
+        if (resourceUploadBtn) {
+            resourceUploadBtn.addEventListener('click', () => this.openResourceUpload());
+        }
+        const partnerUploadBtn = document.getElementById('partnerUploadBtn');
+        if (partnerUploadBtn) {
+            partnerUploadBtn.addEventListener('click', () => this.openPartnerUpload());
+        }
+        const blogUploadBtn = document.getElementById('blogUploadBtn');
+        if (blogUploadBtn) {
+            blogUploadBtn.addEventListener('click', () => this.openBlogUpload());
+        }
+
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', (e) => this.handleProfileSubmit(e));
+        }
+
+        const profileSaveBtn = document.getElementById('profileSaveBtn');
+        if (profileSaveBtn) {
+            profileSaveBtn.addEventListener('click', () => this.handleProfileSubmit(new Event('submit')));
+        }
+
+        const profilePhotoFile = document.getElementById('profilePhotoFile');
+        if (profilePhotoFile) {
+            profilePhotoFile.addEventListener('change', (e) => this.handlePhotoFileChange(e));
+        }
+
+        const profileCropOpenBtn = document.getElementById('profileCropOpenBtn');
+        if (profileCropOpenBtn) {
+            profileCropOpenBtn.addEventListener('click', () => this.openCropperModal());
+        }
+
+        const profileCropResetBtn = document.getElementById('profileCropResetBtn');
+        if (profileCropResetBtn) {
+            profileCropResetBtn.addEventListener('click', () => this.resetPhotoCropper());
+        }
+
+        const cropperApplyBtn = document.getElementById('cropperApplyBtn');
+        if (cropperApplyBtn) {
+            cropperApplyBtn.addEventListener('click', () => this.applyCrop());
+        }
 
         // Modal events
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('hidden.bs.modal', () => {
-                this.resetForm();
-            });
+        const resettableModalIds = ['blogModal', 'partnerModal', 'resourceModal', 'profileModal'];
+        resettableModalIds.forEach(id => {
+            const modalEl = document.getElementById(id);
+            if (modalEl) {
+                modalEl.addEventListener('hidden.bs.modal', () => {
+                    this.resetForm(modalEl);
+                });
+            }
         });
+
+        const cropModalEl = document.getElementById('photoCropModal');
+        if (cropModalEl) {
+            cropModalEl.addEventListener('hidden.bs.modal', () => {
+                this.destroyPhotoCropper();
+            });
+        }
     }
 
     switchTab(tabName) {
@@ -117,6 +170,7 @@ class AdminPanel {
             if (user && this.isAdminUser(user)) {
                 this.currentUser = user;
                 this.showAdminInterface();
+                await this.ensureProfileComplete();
                 await this.loadInitialData();
                 this.showToast('Admin panel loaded successfully', 'success');
             } else {
@@ -169,6 +223,7 @@ class AdminPanel {
             if (data.user && this.isAdminUser(data.user)) {
                 this.currentUser = data.user;
                 this.showAdminInterface();
+                await this.ensureProfileComplete();
                 await this.loadInitialData();
                 this.showToast('Login successful', 'success');
             } else {
@@ -211,7 +266,7 @@ class AdminPanel {
         }
 
         // Set focus to first tab
-        document.querySelector('.nav-link[data-bs-target="#events"]').focus();
+        document.querySelector('.nav-link[data-bs-target="#blog"]').focus();
     }
 
     setLoginLoading(loading) {
@@ -243,858 +298,953 @@ class AdminPanel {
     }
 
     async loadInitialData() {
-        await this.loadTabData('events');
+        await this.loadTabData('blog');
+    }
+
+    // Admin profile enforcement
+    async ensureProfileComplete() {
+        if (!this.currentUser) return;
+
+        try {
+            const { data: profile, error } = await this.supabase
+                .from('admin_profiles')
+                .select('*')
+                .eq('user_id', this.currentUser.id)
+                .maybeSingle();
+
+            if (error) {
+                throw error;
+            }
+
+            if (!profile || this.isProfileIncomplete(profile)) {
+                this.prefillProfileForm(profile || {});
+                this.getProfileModal().show();
+            } else {
+                this.prefillProfileForm(profile);
+            }
+        } catch (error) {
+            console.error('Error checking admin profile:', error);
+            this.prefillProfileForm();
+            this.getProfileModal().show();
+            this.showToast('Please complete your admin profile to continue', 'warning');
+        }
+    }
+
+    isProfileIncomplete(profile) {
+        if (!profile) return true;
+        const requiredFields = ['name', 'position', 'mobile_number', 'facebook_url', 'photo_url'];
+        return requiredFields.some(field => !profile[field] || profile[field].toString().trim().length === 0);
+    }
+
+    prefillProfileForm(profile = {}) {
+        const emailInput = document.getElementById('profileEmail');
+        const nameInput = document.getElementById('profileName');
+        const positionInput = document.getElementById('profilePosition');
+        const mobileInput = document.getElementById('profileMobile');
+        const facebookInput = document.getElementById('profileFacebook');
+        const photoPreview = document.getElementById('profilePhotoPreview');
+        const fileInput = document.getElementById('profilePhotoFile');
+
+        if (emailInput && this.currentUser) emailInput.value = this.currentUser.email || '';
+        if (nameInput) nameInput.value = profile.name || '';
+        if (positionInput) positionInput.value = profile.position || '';
+        if (mobileInput) mobileInput.value = profile.mobile_number || '';
+        if (facebookInput) facebookInput.value = profile.facebook_url || '';
+        if (photoPreview) photoPreview.src = profile.photo_url || '';
+        this.croppedPhotoUrl = profile.photo_url || null;
+        this.croppedPhotoBlob = null;
+        if (fileInput) {
+            if (profile.photo_url) {
+                fileInput.removeAttribute('required');
+            } else {
+                fileInput.setAttribute('required', 'required');
+            }
+        }
+    }
+
+    getProfileModal() {
+        if (!this.profileModal) {
+            const modalEl = document.getElementById('profileModal');
+            if (modalEl) {
+                this.profileModal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+        }
+        return this.profileModal;
+    }
+
+    setProfileSaving(loading) {
+        const saveBtn = document.getElementById('profileSaveBtn');
+        const spinner = document.getElementById('profileSaveSpinner');
+        const text = document.getElementById('profileSaveText');
+        if (!saveBtn || !spinner || !text) return;
+
+        if (loading) {
+            spinner.classList.remove('d-none');
+            saveBtn.disabled = true;
+            text.textContent = 'Saving...';
+        } else {
+            spinner.classList.add('d-none');
+            saveBtn.disabled = false;
+            text.textContent = 'Save Profile';
+        }
+    }
+
+    async handleProfileSubmit(e) {
+        if (e?.preventDefault) {
+            e.preventDefault();
+        }
+        if (!this.currentUser) return;
+
+        const form = document.getElementById('profileForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        let photoUrl;
+        try {
+            photoUrl = await this.getPhotoUrlBeforeSave();
+        } catch (err) {
+            this.showToast(err.message || 'Please provide a profile photo', 'warning');
+            return;
+        }
+
+        const payload = {
+            user_id: this.currentUser.id,
+            email: this.currentUser.email,
+            name: document.getElementById('profileName').value.trim(),
+            position: document.getElementById('profilePosition').value.trim(),
+            mobile_number: document.getElementById('profileMobile').value.trim(),
+            facebook_url: document.getElementById('profileFacebook').value.trim(),
+            photo_url: photoUrl
+        };
+
+        this.setProfileSaving(true);
+        try {
+            const { error } = await this.supabase
+                .from('admin_profiles')
+                .upsert(payload, { onConflict: 'user_id' });
+
+            if (error) throw error;
+
+            this.showToast('Profile saved', 'success');
+            const modal = this.getProfileModal();
+            if (modal) {
+                modal.hide();
+            }
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            this.showToast('Failed to save profile', 'error');
+        } finally {
+            this.setProfileSaving(false);
+        }
+    }
+
+    async handlePhotoFileChange(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        this.resetPhotoCropper(false);
+        await this.openCropperModal(file);
+    }
+
+    async openCropperModal(file) {
+        const modal = this.getPhotoCropModal();
+        if (!modal) return;
+
+        const imageEl = document.getElementById('cropperImage');
+
+        if (!imageEl) return;
+
+        // If file provided, load it; otherwise try existing preview src
+        if (file) {
+            imageEl.src = URL.createObjectURL(file);
+        } else if (this.croppedPhotoUrl) {
+            imageEl.src = this.croppedPhotoUrl;
+        } else {
+            return;
+        }
+
+        if (this.photoCropper) {
+            this.photoCropper.destroy();
+        }
+
+        // Wait for image to load before initializing cropper
+        await new Promise(resolve => {
+            if (imageEl.complete && imageEl.naturalWidth > 0) return resolve();
+            imageEl.onload = () => resolve();
+        });
+
+        this.photoCropper = new Cropper(imageEl, {
+            aspectRatio: 1,
+            viewMode: 2, // keep image inside container
+            autoCropArea: 1,
+            responsive: true,
+            background: false,
+            zoomable: false,
+            zoomOnWheel: false,
+            zoomOnTouch: false,
+            zoomOnDblclick: false,
+            scalable: false,
+            movable: true,
+            dragMode: 'move',
+            ready: () => this.fitImageToContainer(),
+            zoom: (event) => {
+                if (event?.detail?.originalEvent) {
+                    event.preventDefault();
+                }
+            }
+        });
+
+        modal.show();
+    }
+
+    getPhotoCropModal() {
+        if (!this.photoCropModal) {
+            const el = document.getElementById('photoCropModal');
+            if (el) {
+                this.photoCropModal = new bootstrap.Modal(el, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+        }
+        return this.photoCropModal;
+    }
+
+    applyCrop() {
+        if (!this.photoCropper) return;
+
+        const canvas = this.photoCropper.getCroppedCanvas({ width: 600, height: 600 });
+        if (!canvas) return;
+
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            this.croppedPhotoBlob = blob;
+            const previewEl = document.getElementById('profilePhotoPreview');
+            if (previewEl) {
+                previewEl.src = canvas.toDataURL('image/jpeg', 0.9);
+            }
+            const fileInput = document.getElementById('profilePhotoFile');
+            if (fileInput) {
+                fileInput.removeAttribute('required');
+            }
+            const modal = this.getPhotoCropModal();
+            if (modal) {
+                modal.hide();
+            }
+        }, 'image/jpeg', 0.9);
+    }
+
+    initCropper() {
+        return;
+    }
+
+    destroyPhotoCropper() {
+        if (this.photoCropper) {
+            this.photoCropper.destroy();
+            this.photoCropper = null;
+        }
+    }
+
+    resetPhotoCropper(clearPreview = true) {
+        this.destroyPhotoCropper();
+        this.croppedPhotoUrl = null;
+        this.croppedPhotoBlob = null;
+        const previewEl = document.getElementById('profilePhotoPreview');
+        if (clearPreview && previewEl) {
+            previewEl.src = '';
+        }
+        const fileInput = document.getElementById('profilePhotoFile');
+        if (fileInput) {
+            fileInput.value = '';
+            fileInput.setAttribute('required', 'required');
+        }
+        const cropperPreview = document.getElementById('cropperPreview');
+        if (cropperPreview) {
+            cropperPreview.innerHTML = '';
+        }
+    }
+
+    async getPhotoUrlBeforeSave() {
+        if (this.croppedPhotoUrl && !this.croppedPhotoBlob) {
+            return this.croppedPhotoUrl;
+        }
+
+        if (!this.croppedPhotoBlob) {
+            throw new Error('Please upload and crop a profile photo.');
+        }
+
+        const uploadedUrl = await this.uploadToCloudinary(this.croppedPhotoBlob);
+        this.croppedPhotoUrl = uploadedUrl;
+        this.croppedPhotoBlob = null;
+        const fileInput = document.getElementById('profilePhotoFile');
+        if (fileInput) {
+            fileInput.removeAttribute('required');
+        }
+        return uploadedUrl;
+    }
+
+    fitImageToContainer() {
+        if (!this.photoCropper) return;
+
+        const container = this.photoCropper.getContainerData();
+        const image = this.photoCropper.getImageData();
+        if (!container || !image || !image.naturalWidth || !image.naturalHeight) return;
+
+        // Scale image so it fully covers the square crop area without overlap
+        const scale = Math.max(
+            container.width / image.naturalWidth,
+            container.height / image.naturalHeight
+        );
+        this.photoCropper.zoomTo(scale);
+
+        // Center the canvas
+        const canvas = this.photoCropper.getCanvasData();
+        this.photoCropper.setCanvasData({
+            ...canvas,
+            left: (container.width - canvas.width) / 2,
+            top: (container.height - canvas.height) / 2
+        });
+
+        // Center a square crop box that fits the visible canvas
+        const cropSize = Math.min(canvas.width, canvas.height);
+        this.photoCropper.setCropBoxData({
+            width: cropSize,
+            height: cropSize,
+            left: (container.width - cropSize) / 2,
+            top: (container.height - cropSize) / 2
+        });
+    }
+
+    async uploadToCloudinary(blob) {
+        const cloudName = window.ENV?.CLOUDINARY_CLOUD_NAME || this.parseCloudinaryUrl()?.cloudName || 'dtkvdi8ha';
+        const uploadPreset = window.ENV?.CLOUDINARY_UPLOAD_PRESET || '';
+        const apiKey = window.ENV?.CLOUDINARY_API_KEY || this.parseCloudinaryUrl()?.apiKey || '888347376741749';
+        const apiSecret = window.ENV?.CLOUDINARY_API_SECRET || window.ENV?.CLOUDINARY_SECRET || this.parseCloudinaryUrl()?.apiSecret || 'aQcehXJGNhTCGTt_ZE3s_fiHzNA';
+
+        if (!cloudName || !apiKey || !apiSecret) {
+            throw new Error('Cloudinary configuration missing. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.');
+        }
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const paramsToSign = {
+            timestamp
+        };
+        if (uploadPreset) {
+            paramsToSign.upload_preset = uploadPreset;
+        }
+
+        const signature = await this.generateCloudinarySignature(paramsToSign, apiSecret);
+
+        const formData = new FormData();
+        formData.append('file', blob);
+        formData.append('api_key', apiKey);
+        formData.append('timestamp', timestamp.toString());
+        formData.append('signature', signature);
+        if (uploadPreset) {
+            formData.append('upload_preset', uploadPreset);
+        }
+
+        // Use "auto" resource type so non-images (e.g., pdf) are accepted
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (err) {
+            // keep data undefined
+        }
+
+        if (!response.ok) {
+            const msg = data?.error?.message || 'Cloudinary upload failed. Check your upload preset or signature.';
+            throw new Error(msg);
+        }
+
+        if (!data?.secure_url) {
+            throw new Error('Upload succeeded but no URL returned.');
+        }
+
+        const previewEl = document.getElementById('profilePhotoPreview');
+        if (previewEl) {
+            previewEl.src = data.secure_url;
+        }
+        return data.secure_url;
+    }
+
+    parseCloudinaryUrl() {
+        const url = window.ENV?.CLOUDINARY_URL;
+        if (!url) return null;
+        try {
+            // Use a plain string-based regex to avoid escaping issues in literals
+            const re = new RegExp('^cloudinary://([^:]+):([^@]+)@([^/]+)$');
+            const match = url.match(re);
+            if (!match) return null;
+            const [, apiKey, apiSecret, cloudName] = match;
+            if (!apiKey || !apiSecret || !cloudName) return null;
+            return { apiKey, apiSecret, cloudName };
+        } catch (err) {
+            return null;
+        }
+    }
+
+    async generateCloudinarySignature(params, apiSecret) {
+        const sortedKeys = Object.keys(params).sort();
+        const paramString = sortedKeys.map(key => `${key}=${params[key]}`).join('&');
+        const toSign = `${paramString}${apiSecret}`;
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(toSign);
+        const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
     }
 
     async loadTabData(tabName) {
         switch(tabName) {
-            case 'events':
-                await this.loadEvents();
+            case 'blog':
+                await this.loadBlogs();
                 break;
-            case 'news':
-                await this.loadNews();
-                break;
-            case 'training':
-                await this.loadTrainingSessions();
+            case 'partners':
+                await this.loadPartners();
                 break;
             case 'resources':
                 await this.loadResources();
                 break;
+            case 'admins':
+                await this.loadAdmins();
+                break;
         }
     }
 
-    // Events Management
-    async loadEvents() {
+    // Blog Management (in-memory placeholder)
+    getServiceClient() {
+        if (!this.supabaseUrl || !this.serviceKey) return this.supabase;
+        if (!this.supabaseAdmin) {
+            this.supabaseAdmin = supabase.createClient(this.supabaseUrl, this.serviceKey);
+        }
+        return this.supabaseAdmin;
+    }
+
+    // Blog Management
+    async loadBlogs() {
         try {
-            // Use service key for admin operations
-            const { data, error } = await this.supabase
-                .from('events')
+            const { data, error } = await this.getServiceClient()
+                .from('blogs')
                 .select('*')
-                .order('event_date', { ascending: false });
+                .order('published_at', { ascending: false });
 
             if (error) throw error;
-            this.renderEventsTable(data || []);
+            this.blogs = data || [];
+            this.renderBlogTable(this.blogs);
         } catch (error) {
-            console.error('Error loading events:', error);
-            this.showToast('Failed to load events', 'error');
-            // Show empty state on error
-            this.renderEventsTable([]);
+            console.error('Error loading blogs:', error);
+            this.showToast('Failed to load blogs', 'error');
+            this.renderBlogTable([]);
         }
     }
 
-    renderEventsTable(events) {
-        const tbody = document.getElementById('eventsTable');
-        if (!tbody) {
-            console.error('Events table not found');
+    showBlogForm(id = null) {
+        this.currentEditId = id;
+        const form = document.getElementById('blogForm');
+        if (form) form.reset();
+
+        const modalEl = document.getElementById('blogModal');
+        if (!modalEl) return;
+        const modal = new bootstrap.Modal(modalEl);
+
+        const title = document.getElementById('blogModalTitle');
+        if (title) {
+            title.textContent = id ? 'Edit Blog Post' : 'Add Blog Post';
+        }
+
+        if (id) {
+            const blog = this.blogs.find(b => b.id === id);
+            if (blog) {
+                document.getElementById('blogTitle').value = blog.title || '';
+                document.getElementById('blogCategory').value = blog.category || '';
+                document.getElementById('blogAuthor').value = blog.author || '';
+                document.getElementById('blogDate').value = blog.published_at ? blog.published_at.split('T')[0] : '';
+                document.getElementById('blogMinutesToRead').value = blog.minutes_to_read || '';
+                document.getElementById('blogRating').value = blog.rating || '';
+                document.getElementById('blogComments').value = blog.comments_count || '';
+                document.getElementById('blogDescription').value = blog.description || '';
+                document.getElementById('blogBody').value = blog.body || '';
+                document.getElementById('blogPhoto').value = blog.photo || '';
+                document.getElementById('blogShare').value = blog.share_link || '';
+            }
+        }
+
+        modal.show();
+    }
+
+    async handleBlogSubmit(e) {
+        if (e?.preventDefault) e.preventDefault();
+        const titleEl = document.getElementById('blogTitle');
+        const categoryEl = document.getElementById('blogCategory');
+        const authorEl = document.getElementById('blogAuthor');
+        const dateEl = document.getElementById('blogDate');
+        const minutesEl = document.getElementById('blogMinutesToRead');
+        const ratingEl = document.getElementById('blogRating');
+        const commentsEl = document.getElementById('blogComments');
+        const descEl = document.getElementById('blogDescription');
+        const bodyEl = document.getElementById('blogBody');
+        const photoEl = document.getElementById('blogPhoto');
+        const shareEl = document.getElementById('blogShare');
+
+        // Guard against missing form (e.g., if tab not mounted)
+        if (!titleEl || !categoryEl || !authorEl || !dateEl || !minutesEl || !descEl || !bodyEl) {
+            this.showToast('Blog form is not available on this view', 'error');
             return;
         }
 
-        tbody.innerHTML = '';
+        const payload = {
+            title: titleEl.value.trim(),
+            category: categoryEl.value.trim(),
+            author: authorEl.value.trim(),
+            published_at: dateEl.value,
+            minutes_to_read: parseInt(minutesEl.value, 10) || null,
+            rating: ratingEl ? parseFloat(ratingEl.value) || null : null,
+            comments_count: commentsEl ? parseInt(commentsEl.value, 10) || 0 : 0,
+            description: descEl.value.trim(),
+            body: bodyEl.value.trim(),
+            photo: photoEl ? photoEl.value.trim() : '',
+            share_link: shareEl ? shareEl.value.trim() : ''
+        };
 
-        if (events.length === 0) {
+        const client = this.getServiceClient();
+        try {
+            if (this.currentEditId) {
+                const { error } = await client.from('blogs').update(payload).eq('id', this.currentEditId);
+                if (error) throw error;
+                this.showToast('Blog updated', 'success');
+            } else {
+                const { error } = await client.from('blogs').insert(payload);
+                if (error) throw error;
+                this.showToast('Blog created', 'success');
+            }
+            await this.loadBlogs();
+        } catch (error) {
+            console.error('Error saving blog:', error);
+            this.showToast('Failed to save blog', 'error');
+        } finally {
+            this.currentEditId = null;
+            bootstrap.Modal.getInstance(document.getElementById('blogModal'))?.hide();
+        }
+    }
+
+    editBlog(id) {
+        const blog = this.blogs.find(b => b.id === id);
+        if (!blog) return;
+        this.showBlogForm(id);
+        document.getElementById('blogTitle').value = blog.title || '';
+        document.getElementById('blogCategory').value = blog.category || '';
+        document.getElementById('blogAuthor').value = blog.author || '';
+        document.getElementById('blogDate').value = blog.published_at ? blog.published_at.split('T')[0] : '';
+        document.getElementById('blogMinutesToRead').value = blog.minutes_to_read || '';
+        document.getElementById('blogRating').value = blog.rating || '';
+        document.getElementById('blogComments').value = blog.comments_count || '';
+        document.getElementById('blogDescription').value = blog.description || '';
+        document.getElementById('blogBody').value = blog.body || '';
+        document.getElementById('blogPhoto').value = blog.photo || '';
+        document.getElementById('blogShare').value = blog.share_link || '';
+    }
+
+    async deleteBlog(id) {
+        if (!confirm('Delete this blog post?')) return;
+        try {
+            const { error } = await this.getServiceClient().from('blogs').delete().eq('id', id);
+            if (error) throw error;
+            await this.loadBlogs();
+            this.showToast('Blog deleted', 'success');
+        } catch (error) {
+            console.error('Error deleting blog:', error);
+            this.showToast('Failed to delete blog', 'error');
+        }
+    }
+
+    renderBlogTable(items = []) {
+        const tbody = document.getElementById('blogTable');
+        if (!tbody) return;
+        if (!items.length) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
-                        <i class="bi bi-calendar-x"></i> No events found
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="bi bi-journal-text"></i> No blog posts yet
                     </td>
                 </tr>
             `;
             return;
         }
-
-        events.forEach(event => {
+        tbody.innerHTML = '';
+        items.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${event.title}</td>
-                <td>${event.location || 'N/A'}</td>
-                <td>${event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</td>
+                <td>${item.title || ''}</td>
+                <td>${item.category || '-'}</td>
+                <td>${item.author || '-'}</td>
+                <td>${item.published_at ? new Date(item.published_at).toLocaleDateString() : '-'}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editEvent('${event.id}')">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteEvent('${event.id}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editBlog('${item.id}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteBlog('${item.id}')"><i class="bi bi-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(row);
         });
     }
 
-    async handleEventSubmit(e) {
-        e.preventDefault();
+    // Partners Management
+    async loadPartners() {
+        try {
+            const { data, error } = await this.getServiceClient()
+                .from('partnerships')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            this.partners = data || [];
+            this.renderPartnersTable(this.partners);
+        } catch (error) {
+            console.error('Error loading partners:', error);
+            this.renderPartnersTable([]);
+            this.showToast('Failed to load partners', 'error');
+        }
+    }
 
-        const eventData = {
-            title: document.getElementById('eventTitle').value,
-            slug: this.generateSlug(document.getElementById('eventTitle').value),
-            description: document.getElementById('eventDescription').value,
-            short_description: document.getElementById('eventShortDescription').value,
-            location: document.getElementById('eventLocation').value,
-            event_date: document.getElementById('eventDate').value ? new Date(document.getElementById('eventDate').value).toISOString() : null,
-            organizer_name: document.getElementById('eventOrganizer').value,
-            link: document.getElementById('eventLink').value
+    showPartnerForm(id = null) {
+        this.currentEditId = id;
+        const form = document.getElementById('partnerForm');
+        if (form) form.reset();
+
+        const modalEl = document.getElementById('partnerModal');
+        if (!modalEl) return;
+        const modal = new bootstrap.Modal(modalEl);
+        const title = document.getElementById('partnerModalTitle');
+        if (title) title.textContent = id ? 'Edit Partner' : 'Add Partner';
+
+        if (id) {
+            const partner = this.partners.find(p => p.id === id);
+            if (partner) {
+                document.getElementById('partnerName').value = partner.name || '';
+                document.getElementById('partnerLink').value = partner.link || '';
+                document.getElementById('partnerLogo').value = partner.logo || '';
+                document.getElementById('partnerDescription').value = partner.description || '';
+            }
+        }
+
+        modal.show();
+    }
+
+    async handlePartnerSubmit(e) {
+        if (e?.preventDefault) e.preventDefault();
+        const payload = {
+            name: document.getElementById('partnerName').value.trim(),
+            link: document.getElementById('partnerLink').value.trim(),
+            logo: document.getElementById('partnerLogo').value.trim(),
+            description: document.getElementById('partnerDescription').value.trim()
         };
 
+        const client = this.getServiceClient();
         try {
-            let result;
             if (this.currentEditId) {
-                result = await this.supabase
-                    .from('events')
-                    .update(eventData)
-                    .eq('id', this.currentEditId);
+                const { error } = await client.from('partnerships').update(payload).eq('id', this.currentEditId);
+                if (error) throw error;
+                this.showToast('Partner updated', 'success');
             } else {
-                result = await this.supabase
-                    .from('events')
-                    .insert([eventData]);
+                const { error } = await client.from('partnerships').insert(payload);
+                if (error) throw error;
+                this.showToast('Partner created', 'success');
             }
-
-            if (result.error) throw result.error;
-
-            this.showToast(`Event ${this.currentEditId ? 'updated' : 'created'} successfully`, 'success');
-            bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
-            await this.loadEvents();
+            await this.loadPartners();
         } catch (error) {
-            console.error('Error saving event:', error);
-            this.showToast('Failed to save event', 'error');
+            console.error('Error saving partner:', error);
+            this.showToast('Failed to save partner', 'error');
+        } finally {
+            this.currentEditId = null;
+            bootstrap.Modal.getInstance(document.getElementById('partnerModal'))?.hide();
         }
     }
 
-    async editEvent(id) {
-        try {
-            const { data, error } = await this.supabase
-                .from('events')
-                .select('*')
-                .eq('id', id)
-                .single();
+    editPartner(id) {
+        const partner = this.partners.find(p => p.id === id);
+        if (!partner) return;
+        this.showPartnerForm(id);
+        document.getElementById('partnerName').value = partner.name || '';
+        document.getElementById('partnerLink').value = partner.link || '';
+        document.getElementById('partnerLogo').value = partner.logo || '';
+        document.getElementById('partnerDescription').value = partner.description || '';
+    }
 
+    async deletePartner(id) {
+        if (!confirm('Delete this partner?')) return;
+        try {
+            const { error } = await this.getServiceClient().from('partnerships').delete().eq('id', id);
             if (error) throw error;
-
-            this.currentEditId = id;
-            this.populateEventForm(data);
-            new bootstrap.Modal(document.getElementById('eventModal')).show();
+            await this.loadPartners();
+            this.showToast('Partner deleted', 'success');
         } catch (error) {
-            console.error('Error loading event for edit:', error);
-            this.showToast('Failed to load event data', 'error');
+            console.error('Error deleting partner:', error);
+            this.showToast('Failed to delete partner', 'error');
         }
     }
 
-    populateEventForm(event) {
-        document.getElementById('eventTitle').value = event.title || '';
-        document.getElementById('eventDescription').value = event.description || '';
-        document.getElementById('eventShortDescription').value = event.short_description || '';
-        document.getElementById('eventLocation').value = event.location || '';
-        document.getElementById('eventOrganizer').value = event.organizer_name || '';
-        document.getElementById('eventLink').value = event.link || '';
-
-        if (event.event_date) {
-            document.getElementById('eventDate').value = this.formatDateForInput(event.event_date);
-        }
-
-        document.getElementById('eventModalTitle').textContent = 'Edit Event';
-    }
-
-    async deleteEvent(id) {
-        if (!confirm('Are you sure you want to delete this event?')) return;
-
-        try {
-            const { error } = await this.supabase
-                .from('events')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-
-            this.showToast('Event deleted successfully', 'success');
-            await this.loadEvents();
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            this.showToast('Failed to delete event', 'error');
-        }
-    }
-
-    // News Management
-    async loadNews() {
-        try {
-            const [community, training, tournaments] = await Promise.all([
-                this.supabase.from('news_community').select('*').order('created_at', { ascending: false }),
-                this.supabase.from('news_training').select('*').order('created_at', { ascending: false }),
-                this.supabase.from('news_tournaments').select('*').order('created_at', { ascending: false })
-            ]);
-
-            const allNews = [
-                ...community.data.map(item => ({...item, category: 'community'})),
-                ...training.data.map(item => ({...item, category: 'training'})),
-                ...tournaments.data.map(item => ({...item, category: 'tournaments'}))
-            ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-            this.renderNewsTable(allNews);
-        } catch (error) {
-            console.error('Error loading news:', error);
-            this.showToast('Failed to load news', 'error');
-            // Show empty state on error
-            this.renderNewsTable([]);
-        }
-    }
-
-    renderNewsTable(news) {
-        const tbody = document.getElementById('newsTable');
-        if (!tbody) {
-            console.error('News table not found');
-            return;
-        }
-
-        tbody.innerHTML = '';
-
-        if (news.length === 0) {
+    renderPartnersTable(items = []) {
+        const tbody = document.getElementById('partnersTable');
+        if (!tbody) return;
+        if (!items.length) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
-                        <i class="bi bi-newspaper"></i> No news articles found
+                    <td colspan="3" class="text-center text-muted py-4">
+                        <i class="bi bi-people"></i> No partners yet
                     </td>
                 </tr>
             `;
             return;
         }
-
-        news.forEach(item => {
+        tbody.innerHTML = '';
+        items.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${item.title}</td>
-                <td><span class="badge bg-secondary">${item.category}</span></td>
-                <td>${new Date(item.created_at).toLocaleDateString()}</td>
+                <td class="d-flex align-items-center gap-2">
+                    ${item.logo ? `<img src="${item.logo}" alt="" style="width:36px;height:36px;object-fit:contain;border-radius:6px;">` : ''}
+                    <div>
+                        <div class="fw-semibold">${item.name || ''}</div>
+                        <div class="text-muted small">${item.description || ''}</div>
+                    </div>
+                </td>
+                <td><a href="${item.link || '—'}" target="_blank">${item.link || '—'}</a></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editNews('${item.id}', '${item.category}')">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteNews('${item.id}', '${item.category}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editPartner('${item.id}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deletePartner('${item.id}')"><i class="bi bi-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(row);
         });
     }
 
-    async handleNewsSubmit(e) {
-        e.preventDefault();
+    
 
-        const newsData = {
-            title: document.getElementById('newsTitle').value,
-            slug: this.generateSlug(document.getElementById('newsTitle').value),
-            content: document.getElementById('newsContent').value,
-            excerpt: document.getElementById('newsExcerpt').value,
-            image_url: document.getElementById('newsImageUrl').value,
-            link: document.getElementById('newsLink').value
-        };
-
-        const category = document.getElementById('newsCategorySelect').value;
-        const tableName = `news_${category}`;
-
-        try {
-            let result;
-            if (this.currentEditId) {
-                result = await this.supabase
-                    .from(tableName)
-                    .update(newsData)
-                    .eq('id', this.currentEditId);
-            } else {
-                result = await this.supabase
-                    .from(tableName)
-                    .insert([newsData]);
-            }
-
-            if (result.error) throw result.error;
-
-            this.showToast(`News ${this.currentEditId ? 'updated' : 'created'} successfully`, 'success');
-            bootstrap.Modal.getInstance(document.getElementById('newsModal')).hide();
-            await this.loadNews();
-        } catch (error) {
-            console.error('Error saving news:', error);
-            this.showToast('Failed to save news', 'error');
-        }
-    }
-
-    async editNews(id, category) {
-        try {
-            const { data, error } = await this.supabase
-                .from(`news_${category}`)
-                .select('*')
-                .eq('id', id)
-                .single();
-
-            if (error) throw error;
-
-            this.currentEditId = id;
-            this.currentEditCategory = category;
-            this.populateNewsForm(data, category);
-            new bootstrap.Modal(document.getElementById('newsModal')).show();
-        } catch (error) {
-            console.error('Error loading news for edit:', error);
-            this.showToast('Failed to load news data', 'error');
-        }
-    }
-
-    populateNewsForm(news, category) {
-        document.getElementById('newsTitle').value = news.title || '';
-        document.getElementById('newsContent').value = news.content || '';
-        document.getElementById('newsExcerpt').value = news.excerpt || '';
-        document.getElementById('newsImageUrl').value = news.image_url || '';
-        document.getElementById('newsLink').value = news.link || '';
-        document.getElementById('newsCategorySelect').value = category;
-
-        document.getElementById('newsModalTitle').textContent = 'Edit News';
-    }
-
-    async deleteNews(id, category) {
-        if (!confirm('Are you sure you want to delete this news item?')) return;
-
-        try {
-            const { error } = await this.supabase
-                .from(`news_${category}`)
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-
-            this.showToast('News deleted successfully', 'success');
-            await this.loadNews();
-        } catch (error) {
-            console.error('Error deleting news:', error);
-            this.showToast('Failed to delete news', 'error');
-        }
-    }
-
-    // Training Sessions Management
-    async loadTrainingSessions() {
-        try {
-            const { data, error } = await this.supabase
-                .from('training_sessions')
-                .select('*')
-                .order('session_date', { ascending: false });
-
-            if (error) throw error;
-            this.renderTrainingTable(data || []);
-        } catch (error) {
-            console.error('Error loading training sessions:', error);
-            this.showToast('Failed to load training sessions', 'error');
-            // Show empty state on error
-            this.renderTrainingTable([]);
-        }
-    }
-
-    renderTrainingTable(sessions) {
-        const tbody = document.getElementById('trainingTable');
-        if (!tbody) {
-            console.error('Training table not found');
-            return;
-        }
-
-        tbody.innerHTML = '';
-
-        if (sessions.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
-                        <i class="bi bi-mortarboard"></i> No training sessions found
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        sessions.forEach(session => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${session.title}</td>
-                <td>${session.location || 'N/A'}</td>
-                <td>${session.session_date ? new Date(session.session_date).toLocaleDateString() : 'N/A'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editTraining('${session.id}')">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteTraining('${session.id}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    async handleTrainingSubmit(e) {
-        e.preventDefault();
-
-        const materialsInput = document.getElementById('trainingMaterials').value || '';
-        const parsedMaterials = materialsInput
-            .split(',')
-            .map(item => item.trim())
-            .filter(item => item.length > 0);
-
-        const durationValue = parseInt(document.getElementById('trainingDuration').value, 10);
-        const maxParticipantsValue = parseInt(document.getElementById('trainingMaxParticipants').value, 10);
-
-        const trainingData = {
-            title: document.getElementById('trainingTitle').value,
-            description: document.getElementById('trainingDescription').value,
-            location: document.getElementById('trainingLocation').value,
-            session_date: document.getElementById('trainingDate').value ? new Date(document.getElementById('trainingDate').value).toISOString() : null,
-            trainer: document.getElementById('trainingTrainer').value,
-            duration_minutes: Number.isNaN(durationValue) ? null : durationValue,
-            skill_level: document.getElementById('trainingLevel').value,
-            max_participants: Number.isNaN(maxParticipantsValue) ? null : maxParticipantsValue,
-            materials: parsedMaterials,
-            updated_by: this.currentUser?.id || null
-        };
-
-        if (!parsedMaterials.length) {
-            trainingData.materials = [];
-        }
-
-        if (!this.currentEditId && this.currentUser?.id) {
-            trainingData.created_by = this.currentUser.id;
-        }
-
-        if (!trainingData.updated_by) {
-            delete trainingData.updated_by;
-        }
-
-        try {
-            let result;
-            if (this.currentEditId) {
-                result = await this.supabase
-                    .from('training_sessions')
-                    .update(trainingData)
-                    .eq('id', this.currentEditId);
-            } else {
-                result = await this.supabase
-                    .from('training_sessions')
-                    .insert([trainingData]);
-            }
-
-            if (result.error) throw result.error;
-
-            this.showToast(`Training session ${this.currentEditId ? 'updated' : 'created'} successfully`, 'success');
-            bootstrap.Modal.getInstance(document.getElementById('trainingModal')).hide();
-            await this.loadTrainingSessions();
-        } catch (error) {
-            console.error('Error saving training session:', error);
-            this.showToast('Failed to save training session', 'error');
-        }
-    }
-
-    async editTraining(id) {
-        try {
-            const { data, error } = await this.supabase
-                .from('training_sessions')
-                .select('*')
-                .eq('id', id)
-                .single();
-
-            if (error) throw error;
-
-            this.currentEditId = id;
-            this.populateTrainingForm(data);
-            document.getElementById('trainingModalTitle').textContent = 'Edit Training Session';
-            new bootstrap.Modal(document.getElementById('trainingModal')).show();
-        } catch (error) {
-            console.error('Error loading training session for edit:', error);
-            this.showToast('Failed to load training session', 'error');
-        }
-    }
-
-    populateTrainingForm(session) {
-        document.getElementById('trainingTitle').value = session.title || '';
-        document.getElementById('trainingDescription').value = session.description || '';
-        document.getElementById('trainingLocation').value = session.location || '';
-        document.getElementById('trainingTrainer').value = session.trainer || '';
-        document.getElementById('trainingDuration').value = session.duration_minutes ?? '';
-        document.getElementById('trainingLevel').value = session.skill_level || 'beginner';
-        document.getElementById('trainingMaxParticipants').value = session.max_participants ?? '';
-
-        const materialsValue = Array.isArray(session.materials)
-            ? session.materials.join(', ')
-            : (session.materials || '');
-        document.getElementById('trainingMaterials').value = materialsValue;
-
-        if (session.session_date) {
-            document.getElementById('trainingDate').value = this.formatDateForInput(session.session_date);
-        }
-
-        document.getElementById('trainingModalTitle').textContent = 'Edit Training Session';
-    }
-
-    async deleteTraining(id) {
-        if (!confirm('Are you sure you want to delete this training session?')) return;
-
-        try {
-            const { error } = await this.supabase
-                .from('training_sessions')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-
-            this.showToast('Training session deleted successfully', 'success');
-            await this.loadTrainingSessions();
-        } catch (error) {
-            console.error('Error deleting training session:', error);
-            this.showToast('Failed to delete training session', 'error');
-        }
-    }
-
-    // Resources Management
+    // Resources Management (simple)
     async loadResources() {
         try {
-            const { data, error } = await this.supabase
+            const { data, error } = await this.getServiceClient()
                 .from('resources')
                 .select('*')
                 .order('created_at', { ascending: false });
-
-            if (error) {
-                if (this.isMissingTableError(error)) {
-                    await this.loadLegacyResources();
-                    return;
-                }
-                throw error;
-            }
-
-            const normalized = (data || []).map(item =>
-                this.normalizeResourceRecord(item, {
-                    table: 'resources',
-                    key: item.resource_type || item.category || 'general'
-                })
-            );
-
-            this.renderResourcesTable(normalized);
+            if (error) throw error;
+            this.resourcesData = data || [];
+            this.renderResourcesTableSimple(this.resourcesData);
         } catch (error) {
             console.error('Error loading resources:', error);
+            this.resourcesData = [];
+            this.renderResourcesTableSimple([]);
             this.showToast('Failed to load resources', 'error');
-            this.renderResourcesTable([]);
         }
     }
 
-    async loadLegacyResources() {
-        const aggregated = [];
+    showResourceForm(id = null) {
+        this.currentEditId = id;
+        const form = document.getElementById('resourceForm');
+        if (form) form.reset();
+        const modalEl = document.getElementById('resourceModal');
+        if (!modalEl) return;
+        const modal = new bootstrap.Modal(modalEl);
+        const title = document.getElementById('resourceModalTitle');
+        if (title) title.textContent = id ? 'Edit Resource' : 'Add Resource';
 
-        for (const source of this.resourceSources) {
-            try {
-                const { data, error } = await this.supabase
-                    .from(source.table)
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                (data || []).forEach(item => {
-                    aggregated.push(this.normalizeResourceRecord(item, source));
-                });
-            } catch (error) {
-                console.warn(`Error loading resources from ${source.table}:`, error);
+        if (id) {
+            const resource = this.resourcesData.find(r => r.id === id);
+            if (resource) {
+                document.getElementById('resourceTitle').value = resource.title || '';
+                document.getElementById('resourceFileUrl').value = resource.document_url || resource.fileUrl || '';
+                document.getElementById('resourceDescription').value = resource.description || '';
             }
         }
-
-        if (aggregated.length === 0) {
-            this.renderResourcesTable([]);
-            return;
-        }
-
-        aggregated.sort((a, b) => {
-            const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
-            const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
-            return bTime - aTime;
-        });
-
-        this.renderResourcesTable(aggregated);
-    }
-
-    normalizeResourceRecord(resource, source) {
-        const sourceKey = source?.key || resource?.resource_type || resource?.category || 'general';
-
-        let normalizedTags = [];
-        if (Array.isArray(resource.tags)) {
-            normalizedTags = resource.tags;
-        } else if (typeof resource.tags === 'string' && resource.tags.trim().length > 0) {
-            const cleaned = resource.tags.replace(/[{}]/g, '');
-            normalizedTags = cleaned.split(',').map(tag => tag.trim()).filter(Boolean);
-        }
-
-        return {
-            ...resource,
-            category: resource.category || sourceKey,
-            file_type: resource.file_type || resource.type || null,
-            tags: normalizedTags,
-            difficulty_level: resource.difficulty_level || 'beginner',
-            estimated_time: resource.estimated_time ?? null,
-            is_active: typeof resource.is_active === 'boolean' ? resource.is_active : true,
-            _table: source?.table || 'resources',
-            _source: sourceKey
-        };
-    }
-
-    renderResourcesTable(resources) {
-        const tbody = document.getElementById('resourcesTable');
-        if (!tbody) {
-            console.error('Resources table not found');
-            return;
-        }
-
-        tbody.innerHTML = '';
-
-        if (resources.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
-                        <i class="bi bi-folder"></i> No resources found
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        resources.forEach(resource => {
-            const collectionBadge = this.formatResourceSource(resource._source || resource.resource_type || resource.category);
-            const fileTypeBadge = this.formatFileType(resource.file_type);
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${resource.title}</td>
-                <td>
-                    <span class="badge bg-info">${collectionBadge}</span>
-                    ${fileTypeBadge ? `<span class="badge bg-secondary ms-1">${fileTypeBadge}</span>` : ''}
-                </td>
-                <td>${resource.created_at ? new Date(resource.created_at).toLocaleDateString() : 'N/A'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editResource('${resource._table}', '${resource.id}')">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteResource('${resource._table}', '${resource.id}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        modal.show();
     }
 
     async handleResourceSubmit(e) {
-        e.preventDefault();
-
-        const sourceValue = document.getElementById('resourceSource').value;
-        const source = this.getResourceSourceByKey(sourceValue);
-        const tagsInput = document.getElementById('resourceTags').value || '';
-        const parsedTags = tagsInput
-            .split(',')
-            .map(tag => tag.trim())
-            .filter(tag => tag.length > 0);
-        const estimatedTimeValue = parseInt(document.getElementById('resourceEstimatedTime').value, 10);
-
-        const activeSourceKey = source ? source.key : (this.currentResourceSource || sourceValue || 'general');
-        let tableName;
-
-        if (this.currentEditId) {
-            tableName = this.currentResourceTable || (source ? source.table : 'resources');
-        } else {
-            if (!source) {
-                this.showToast('Please choose a valid collection for the resource', 'error');
-                return;
-            }
-            tableName = source.table;
-        }
-
-        const resourceData = {
-            title: document.getElementById('resourceTitle').value,
-            description: document.getElementById('resourceDescription').value,
-            category: activeSourceKey,
-            file_type: document.getElementById('resourceFileType').value || null,
-            file_url: document.getElementById('resourceUrl').value,
-            download_url: document.getElementById('resourceDownloadUrl').value || null,
-            file_size: document.getElementById('resourceFileSize').value || null,
-            tags: parsedTags,
-            difficulty_level: document.getElementById('resourceDifficulty').value,
-            estimated_time: Number.isNaN(estimatedTimeValue) ? null : estimatedTimeValue,
-            created_by: document.getElementById('resourceCreatedBy').value || null,
-            is_active: document.getElementById('resourceActive').value === 'true'
+        if (e?.preventDefault) e.preventDefault();
+        const payload = {
+            title: document.getElementById('resourceTitle').value.trim(),
+            document_url: document.getElementById('resourceFileUrl').value.trim(),
+            description: document.getElementById('resourceDescription').value.trim()
         };
 
-        if (tableName === 'resources') {
-            resourceData.resource_type = activeSourceKey;
-        }
-
+        const client = this.getServiceClient();
         try {
-            let result;
             if (this.currentEditId) {
-                result = await this.supabase
-                    .from(tableName)
-                    .update(resourceData)
-                    .eq('id', this.currentEditId);
+                const { error } = await client.from('resources').update(payload).eq('id', this.currentEditId);
+                if (error) throw error;
+                this.showToast('Resource updated', 'success');
             } else {
-                result = await this.supabase
-                    .from(tableName)
-                    .insert([resourceData]);
+                const { error } = await client.from('resources').insert(payload);
+                if (error) throw error;
+                this.showToast('Resource created', 'success');
             }
-
-            if (result.error) throw result.error;
-
-            this.showToast(`Resource ${this.currentEditId ? 'updated' : 'created'} successfully`, 'success');
-            bootstrap.Modal.getInstance(document.getElementById('resourceModal')).hide();
             await this.loadResources();
         } catch (error) {
             console.error('Error saving resource:', error);
             this.showToast('Failed to save resource', 'error');
+        } finally {
+            this.currentEditId = null;
+            bootstrap.Modal.getInstance(document.getElementById('resourceModal'))?.hide();
         }
     }
 
-    async editResource(tableName, id) {
+    async openResourceUpload() {
+        await this.uploadAndFill('resourceFileUrl', 'File uploaded to Cloudinary');
+    }
+
+    async openPartnerUpload() {
+        await this.uploadAndFill('partnerLogo', 'Logo uploaded to Cloudinary');
+    }
+
+    async openBlogUpload() {
+        await this.uploadAndFill('blogPhoto', 'Image uploaded to Cloudinary');
+    }
+
+    async pickFile() {
+        return new Promise((resolve) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '*/*';
+            input.onchange = (e) => {
+                const file = e.target.files?.[0];
+                resolve(file || null);
+            };
+            input.click();
+        });
+    }
+
+    async uploadAndFill(inputId, successMessage = 'File uploaded') {
+        const file = await this.pickFile();
+        if (!file) return;
         try {
-            const { data, error } = await this.supabase
-                .from(tableName)
-                .select('*')
-                .eq('id', id)
-                .single();
-
-            if (error) throw error;
-
-            this.currentEditId = id;
-            this.currentResourceTable = tableName;
-            this.currentResourceSource = this.getResourceSourceByTable(tableName)?.key || data.resource_type || data.category || 'general';
-            this.populateResourceForm(data, tableName);
-            document.getElementById('resourceModalTitle').textContent = 'Edit Resource';
-            new bootstrap.Modal(document.getElementById('resourceModal')).show();
+            const url = await this.uploadToCloudinary(file);
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = url;
+            }
+            this.showToast(successMessage, 'success');
         } catch (error) {
-            console.error('Error loading resource for edit:', error);
-            this.showToast('Failed to load resource', 'error');
+            console.error('Upload error:', error);
+            this.showToast(error.message || 'Failed to upload file', 'error');
         }
     }
 
-    populateResourceForm(resource, tableName) {
-        const source = this.getResourceSourceByTable(tableName);
-        const sourceKey = source?.key || resource.resource_type || resource.category || 'template';
-
-        this.currentResourceSource = sourceKey;
-        document.getElementById('resourceTitle').value = resource.title || '';
-        document.getElementById('resourceDescription').value = resource.description || '';
-        document.getElementById('resourceSource').value = sourceKey;
-        document.getElementById('resourceSource').disabled = true;
-        document.getElementById('resourceFileType').value = resource.file_type || 'pdf';
-        document.getElementById('resourceUrl').value = resource.file_url || '';
-        document.getElementById('resourceDownloadUrl').value = resource.download_url || '';
-        document.getElementById('resourceFileSize').value = resource.file_size || '';
-        document.getElementById('resourceDifficulty').value = resource.difficulty_level || 'beginner';
-        document.getElementById('resourceEstimatedTime').value = resource.estimated_time ?? '';
-        document.getElementById('resourceTags').value = Array.isArray(resource.tags) ? resource.tags.join(', ') : (resource.tags || '');
-        document.getElementById('resourceCreatedBy').value = resource.created_by || '';
-        document.getElementById('resourceActive').value = resource.is_active === false ? 'false' : 'true';
+    editResource(id) {
+        this.showResourceForm(id);
     }
 
-    async deleteResource(tableName, id) {
-        if (!confirm('Are you sure you want to delete this resource?')) return;
-
+    async deleteResource(id) {
+        if (!confirm('Delete this resource?')) return;
         try {
-            const { error } = await this.supabase
-                .from(tableName)
-                .delete()
-                .eq('id', id);
-
+            const { error } = await this.getServiceClient().from('resources').delete().eq('id', id);
             if (error) throw error;
-
-            this.showToast('Resource deleted successfully', 'success');
             await this.loadResources();
+            this.showToast('Resource deleted', 'success');
         } catch (error) {
             console.error('Error deleting resource:', error);
             this.showToast('Failed to delete resource', 'error');
         }
     }
 
-    isMissingTableError(error) {
-        if (!error) return false;
-        const message = `${error.message || ''} ${error.details || ''}`.toLowerCase();
-        return (
-            error.code === 'PGRST116' ||
-            error.code === 'PGRST205' ||
-            error.code === '42P01' ||
-            error.status === 404 ||
-            message.includes('does not exist') ||
-            message.includes('not found')
-        );
-    }
-
-    getResourceSourceByKey(key) {
-        if (!key) return null;
-        return this.resourceSources.find(source => source.key === key) || null;
-    }
-
-    getResourceSourceByTable(tableName) {
-        if (!tableName) return null;
-        return this.resourceSources.find(source => source.table === tableName) || null;
-    }
-
-
-    // Utility Functions
-    formatDateForInput(dateString) {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        if (Number.isNaN(date.getTime())) {
-            return '';
+    renderResourcesTableSimple(items = []) {
+        const tbody = document.getElementById('resourcesTable');
+        if (!tbody) return;
+        if (!items.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-4">
+                        <i class="bi bi-folder"></i> No resources yet
+                    </td>
+                </tr>
+            `;
+            return;
         }
-        return date.toISOString().slice(0, 16);
+        tbody.innerHTML = '';
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.title || ''}</td>
+                <td><a href="${item.document_url || item.fileUrl || '#'}" target="_blank">${item.document_url || item.fileUrl || '-'}</a></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editResource('${item.id}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteResource('${item.id}')"><i class="bi bi-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
     }
 
-    formatResourceSource(key) {
-        if (!key) {
-            return 'General';
+    // Admins Management (read-only from Supabase admin_profiles)
+    async loadAdmins() {
+        try {
+            const { data, error } = await this.supabase
+                .from('admin_profiles')
+                .select('id, name, email, position, mobile_number, facebook_url, photo_url')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            this.adminsList = data || [];
+            this.renderAdminsTable(this.adminsList);
+        } catch (error) {
+            console.error('Error loading admins:', error);
+            this.adminsList = [];
+            this.renderAdminsTable([]);
+            this.showToast('Failed to load admin profiles', 'error');
         }
-        const source = this.getResourceSourceByKey(key);
-        if (source) {
-            return source.label;
-        }
-        const normalized = key.toString().trim();
-        if (!normalized) {
-            return 'General';
-        }
-        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
     }
 
-    formatFileType(fileType) {
-        if (!fileType) {
-            return '';
+    renderAdminsTable(items = []) {
+        const tbody = document.getElementById('adminsTable');
+        if (!tbody) return;
+        if (!items.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="bi bi-person-badge"></i> No admins yet
+                    </td>
+                </tr>
+            `;
+            return;
         }
-        const normalized = fileType.toString().trim();
-        if (!normalized) {
-            return '';
-        }
-        return normalized.toUpperCase();
+        tbody.innerHTML = '';
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            const nameContent = `
+                ${item.photo_url ? `<img src="${item.photo_url}" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:50%;">` : ''}
+                <span>${item.name || ''}</span>
+            `;
+            const nameCell = item.facebook_url
+                ? `<a href="${item.facebook_url}" target="_blank" rel="noopener noreferrer" class="d-flex align-items-center gap-2 text-decoration-none">${nameContent}</a>`
+                : `<div class="d-flex align-items-center gap-2">${nameContent}</div>`;
+            row.innerHTML = `
+                <td>${nameCell}</td>
+                <td>${item.email || ''}</td>
+                <td>${item.position || ''}</td>
+                <td>${item.mobile_number || ''}</td>
+            `;
+            tbody.appendChild(row);
+        });
     }
 
-    generateSlug(text) {
-        return text.toLowerCase()
-            .replace(/[^\w ]+/g, '')
-            .replace(/ +/g, '-');
-    }
-
-    resetForm() {
+    resetForm(modalEl = null) {
         this.currentEditId = null;
-        this.currentEditCategory = null;
-        this.currentResourceTable = null;
-        this.currentResourceSource = null;
-        document.querySelectorAll('.modal form').forEach(form => form.reset());
 
-        const defaultSource = this.resourceSources?.[0]?.key || 'template';
-        const resourceSource = document.getElementById('resourceSource');
-        if (resourceSource) {
-            resourceSource.disabled = false;
-            resourceSource.value = defaultSource;
+        if (modalEl?.id === 'profileModal') {
+            this.resetPhotoCropper();
         }
-        const resourceDifficulty = document.getElementById('resourceDifficulty');
-        if (resourceDifficulty) {
-            resourceDifficulty.value = 'beginner';
-        }
-        const resourceActive = document.getElementById('resourceActive');
-        if (resourceActive) {
-            resourceActive.value = 'true';
-        }
-        const resourceFileType = document.getElementById('resourceFileType');
-        if (resourceFileType) {
-            resourceFileType.value = 'pdf';
-        }
+
+        const forms = modalEl ? modalEl.querySelectorAll('form') : document.querySelectorAll('.modal form');
+        forms.forEach(form => form.reset());
     }
 
     showToast(message, type = 'info') {
@@ -1158,102 +1308,44 @@ function logout() {
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('loginPassword');
     const passwordIcon = document.getElementById('passwordIcon');
+    if (!passwordInput || !passwordIcon) return;
 
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        passwordIcon.classList.remove('bi-eye');
-        passwordIcon.classList.add('bi-eye-slash');
-    } else {
-        passwordInput.type = 'password';
-        passwordIcon.classList.remove('bi-eye-slash');
-        passwordIcon.classList.add('bi-eye');
-    }
+    const show = passwordInput.type === 'password';
+    passwordInput.type = show ? 'text' : 'password';
+
+    passwordIcon.classList.toggle('bi-eye', !show);
+    passwordIcon.classList.toggle('bi-eye-slash', show);
 }
 
 // Modal show functions
-function showEventForm() {
-    adminPanel.currentEditId = null;
-    document.getElementById('eventModalTitle').textContent = 'Add Event';
-    new bootstrap.Modal(document.getElementById('eventModal')).show();
+function showBlogForm() {
+    adminPanel?.showBlogForm();
 }
 
-function showNewsForm() {
-    adminPanel.currentEditId = null;
-    document.getElementById('newsModalTitle').textContent = 'Add News';
-    new bootstrap.Modal(document.getElementById('newsModal')).show();
-}
-
-function showTrainingForm() {
-    adminPanel.currentEditId = null;
-    document.getElementById('trainingModalTitle').textContent = 'Add Training Session';
-    new bootstrap.Modal(document.getElementById('trainingModal')).show();
+function showPartnerForm() {
+    adminPanel?.showPartnerForm();
 }
 
 function showResourceForm() {
-    adminPanel.currentEditId = null;
-    adminPanel.currentResourceTable = null;
-    adminPanel.currentResourceSource = null;
-    document.getElementById('resourceModalTitle').textContent = 'Add Resource';
-    const defaultSource = adminPanel?.resourceSources?.[0]?.key || 'template';
-    const sourceSelect = document.getElementById('resourceSource');
-    if (sourceSelect) {
-        sourceSelect.disabled = false;
-        sourceSelect.value = defaultSource;
-    }
-    const difficultySelect = document.getElementById('resourceDifficulty');
-    if (difficultySelect) {
-        difficultySelect.value = 'beginner';
-    }
-    const fileTypeSelect = document.getElementById('resourceFileType');
-    if (fileTypeSelect) {
-        fileTypeSelect.value = 'pdf';
-    }
-    const statusSelect = document.getElementById('resourceActive');
-    if (statusSelect) {
-        statusSelect.value = 'true';
-    }
-    new bootstrap.Modal(document.getElementById('resourceModal')).show();
-}
-
-// Save functions
-function saveEvent() {
-    const form = document.getElementById('eventForm');
-    const formData = new FormData();
-
-    formData.append('title', document.getElementById('eventTitle').value);
-    formData.append('event_date', document.getElementById('eventDate').value);
-    formData.append('location', document.getElementById('eventLocation').value);
-    formData.append('organizer_name', document.getElementById('eventOrganizer').value);
-    formData.append('short_description', document.getElementById('eventShortDescription').value);
-    formData.append('description', document.getElementById('eventDescription').value);
-    formData.append('link', document.getElementById('eventLink').value);
-
-    const event = { preventDefault: () => {}, target: { elements: form.elements } };
-    adminPanel.handleEventSubmit({ preventDefault: () => {}, target: form });
-}
-
-function saveNews() {
-    const form = document.getElementById('newsForm');
-    adminPanel.handleNewsSubmit({ preventDefault: () => {}, target: form });
-}
-
-function saveTraining() {
-    const form = document.getElementById('trainingForm');
-    adminPanel.handleTrainingSubmit({ preventDefault: () => {}, target: form });
-}
-
-function saveResource() {
-    const form = document.getElementById('resourceForm');
-    adminPanel.handleResourceSubmit({ preventDefault: () => {}, target: form });
+    adminPanel?.showResourceForm();
 }
 
 window.adminPanel = {
-    editEvent: (id) => adminPanel.editEvent(id),
-    deleteEvent: (id) => adminPanel.deleteEvent(id),
-    editNews: (id, category) => adminPanel.editNews(id, category),
-    deleteNews: (id, category) => adminPanel.deleteNews(id, category),
-    editTraining: (id) => adminPanel.editTraining(id),
-    deleteTraining: (id) => adminPanel.deleteTraining(id),
-    editResource: (table, id) => adminPanel.editResource(table, id),
-    deleteResource: (table, id) => adminPanel.deleteResource(table, id)
+    editBlog: (id) => adminPanel.editBlog(id),
+    deleteBlog: (id) => adminPanel.deleteBlog(id),
+    editPartner: (id) => adminPanel.editPartner(id),
+    deletePartner: (id) => adminPanel.deletePartner(id),
+    editResource: (id) => adminPanel.editResource(id),
+    deleteResource: (id) => adminPanel.deleteResource(id)
 };
+
+
+
+
+
+
+
+
+
+
+

@@ -4,9 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>News & Events - Adamson Debate Society</title>
-  <meta name="description" content="Stay updated with the latest news, events, and achievements from the Adamson Debate Society.">
-  <meta name="keywords" content="adamson debate society, news, events, debate tournaments, academic achievements">
+  <title>Blog - Adamson Debate Society</title>
+  <meta name="description" content="Read the latest stories, updates, and achievements from the Adamson Debate Society.">
+  <meta name="keywords" content="adamson debate society, blog, news, events, debate tournaments, academic achievements">
 
   <link href="assets/img/Adamson Debate Logo.jpg" rel="icon">
   <link href="assets/img/Adamson Debate Logo.jpg" rel="apple-touch-icon">
@@ -23,6 +23,14 @@
 
   <link href="assets/css/main.css" rel="stylesheet">
   <style>
+    /* Align header font with index.html */
+    .blog-page,
+    .blog-page .header,
+    .blog-page .navmenu a,
+    .blog-page .logo .sitename {
+      font-family: 'Poppins', 'Roboto', 'Raleway', sans-serif;
+    }
+
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -415,15 +423,15 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html#hero">Home</a></li>
-          <li><a href="index.html#about">About</a></li>
-          <li><a href="index.html#programs">Programs</a></li>
-          <li><a href="index.html#membership">Membership</a></li>
-          <li><a href="index.html#partners">Partners</a></li>
-          <li><a href="news-events.html" class="active">News & Events</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#membership">Membership</a></li>
+          <li><a href="blog.html" class="active">Blog</a></li>
+          <li><a href="debate-guidelines.html">Debate Guidelines</a></li>
           <li class="dropdown"><a href="#"><span>Resources</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="debate-guidelines.html">Debate Guidelines</a></li>
-              <li><a href="training-materials.html">Training Materials</a></li>
+              <li><a href="index.html#open-resource-template">Case Construction</a></li>
+              <li><a href="index.html#open-resource-theory">Matter Loading</a></li>
+              <li><a href="index.html#open-resource-analytics">Adjudication</a></li>
               <li><a href="auds-constitution.html">AUDS Constitution</a></li>
             </ul>
           </li>
@@ -621,9 +629,9 @@
           await fetchHeroStats();
           await fetchFeaturedArticle();
           await fetchNewsArticles();
-          console.log('News & Events dynamic content loaded');
+          console.log('Blog dynamic content loaded');
         } catch (error) {
-          console.error('Error loading News & Events content:', error);
+          console.error('Error loading Blog content:', error);
           applyFallbackContent();
         }
       });

@@ -38,15 +38,15 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#programs">Programs</a></li>
-          <li><a href="#membership">Membership</a></li>
-          <li><a href="#partners">Partners</a></li>
-          <li><a href="news-events.html">News & Events</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#membership">Membership</a></li>
+          <li><a href="blog.html">Blog</a></li>
           <li class="dropdown"><a href="#"><span>Resources</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
+              <li><a href="index.html#open-resource-template" class="resource-modal-link" data-resource-type="template">Case Construction</a></li>
+              <li><a href="index.html#open-resource-theory" class="resource-modal-link" data-resource-type="theory">Matter Loading</a></li>
+              <li><a href="index.html#open-resource-analytics" class="resource-modal-link" data-resource-type="analytics">Adjudication</a></li>
               <li><a href="debate-guidelines.html">Debate Guidelines</a></li>
-              <li><a href="training-materials.html">Training Materials</a></li>
               <li><a href="auds-constitution.html">AUDS Constitution</a></li>
             </ul>
           </li>
@@ -169,62 +169,6 @@
 
     </section>
 
-    <section id="programs" class="services section">
-
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Our Programs</h2>
-        <p>Comprehensive training and development programs designed to excel in competitive debate</p>
-      </div>
-
-      <div class="container">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="service-item  position-relative">
-              <div class="icon">
-                <i class="bi bi-megaphone"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Competitive Debate Training</h3>
-              </a>
-              <p>Intensive training programs preparing members for advanced debate skills development with structured practice sessions and expert mentorship.</p>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="bi bi-book"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Research & Analysis</h3>
-              </a>
-              <p>Advanced research methodologies and critical analysis training to develop evidence-based arguments and strengthen analytical thinking capabilities.</p>
-            </div>
-          </div>
-
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="bi bi-globe"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Social Advocacy</h3>
-              </a>
-              <p>Engaging in meaningful social issues through debates and discussions, promoting civic awareness and responsible citizenship among members.</p>
-              <a href="#" class="stretched-link"></a>
-            </div>
-          </div>
-
-
-        </div>
-
-      </div>
-
-    </section>
-
     <section id="call-to-action" class="call-to-action section dark-background">
 
       <img src="assets/img/cta-bg.jpg" alt="">
@@ -237,7 +181,7 @@
             <p>Embark on a journey of intellectual growth and competitive excellence. Join the Adamson Debate Society and become part of a legacy of academic distinction, critical thinking, and persuasive communication that will serve you throughout your academic and professional career.</p>
           </div>
           <div class="col-xl-3 cta-btn-container text-center">
-            <a class="cta-btn align-middle" href="#membership">Become a Member</a>
+            <a class="cta-btn align-middle" href="about.html#membership">Become a Member</a>
           </div>
         </div>
 
@@ -297,229 +241,6 @@
 
 
 
-
-    <section id="membership" class="pricing section light-background">
-
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Official Membership Types</h2>
-        <p>Open to all bonafide students of Adamson University, both undergraduate and graduate</p>
-      </div>
-
-      <div class="container">
-
-        <!-- Mobile Tabbed Interface (visible only on mobile) -->
-        <div class="mobile-membership d-block d-lg-none" data-aos="fade-up" data-aos-delay="100">
-          <div class="mobile-membership-container">
-            <div class="mobile-membership-buttons">
-              <button class="mobile-membership-btn active" onclick="switchMembershipTab('resident')" data-tab="resident">
-                <i class="bi bi-person"></i>
-                <span>Resident</span>
-              </button>
-              <button class="mobile-membership-btn" onclick="switchMembershipTab('varsity')" data-tab="varsity">
-                <i class="bi bi-trophy"></i>
-                <span>Varsity</span>
-              </button>
-              <button class="mobile-membership-btn" onclick="switchMembershipTab('officer')" data-tab="officer">
-                <i class="bi bi-gear"></i>
-                <span>Officer</span>
-              </button>
-            </div>
-
-            <div class="mobile-membership-content">
-              <div class="mobile-membership-panel active" id="mobile-resident-panel">
-                <div class="mobile-membership-header">
-                  <h3>Resident Member</h3>
-                  <h4>Official</h4>
-                  <div class="mobile-price">₱50</div>
-                </div>
-                <ul class="mobile-membership-list">
-                  <li><i class="bi bi-check2-circle"></i> <span>Regular member of the organization</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Access to all society activities and training</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Eligible for leadership roles and committees</span></li>
-                </ul>
-                <div class="mobile-btn-wrap">
-                  <button type="button" onclick="showMembershipPopup('resident')" class="mobile-btn-buy">Apply Now</button>
-                </div>
-              </div>
-
-              <div class="mobile-membership-panel" id="mobile-varsity-panel">
-                <div class="mobile-membership-header">
-                  <span class="mobile-recommended-badge">Competitive</span>
-                  <h3>Varsity Member</h3>
-                  <h4>Elite</h4>
-                  <div class="mobile-price">Free</div>
-                </div>
-                <ul class="mobile-membership-list">
-                  <li><i class="bi bi-check2-circle"></i> <span>All Resident Member benefits</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Compete in off-campus tournaments</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Represent Adamson University officially</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Advanced training and coaching</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Renewed membership at start of semester</span></li>
-                </ul>
-                <div class="mobile-btn-wrap">
-                  <button type="button" onclick="showMembershipPopup('varsity')" class="mobile-btn-buy">Apply Now</button>
-                </div>
-              </div>
-
-              <div class="mobile-membership-panel" id="mobile-officer-panel">
-                <div class="mobile-membership-header">
-                  <span class="mobile-leadership-badge">Leadership</span>
-                  <h3>Officer Member</h3>
-                  <h4>Executive</h4>
-                  <div class="mobile-price">By Election</div>
-                </div>
-                <ul class="mobile-membership-list">
-                  <li><i class="bi bi-check2-circle"></i> <span>All Varsity Member benefits</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Executive committee voting rights</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Organizational management responsibilities</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Event planning and coordination authority</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Budget and resource allocation oversight</span></li>
-                  <li><i class="bi bi-check2-circle"></i> <span>Mentorship of junior members</span></li>
-                </ul>
-                <div class="mobile-btn-wrap">
-                  <button type="button" onclick="showMembershipPopup('officer')" class="mobile-btn-buy">Learn More</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Desktop Layout (hidden on mobile) -->
-        <div class="row gy-4 d-none d-lg-flex">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="pricing-item">
-              <h3>Resident Member</h3>
-              <h4>Official</h4>
-              <div class="price">₱50</div>
-              <ul>
-                <li>Regular member of the organization</li>
-                <li>Access to all society activities and training</li>
-                <li>Eligible for leadership roles and committees</li>
-              </ul>
-              <div class="btn-wrap">
-                <button type="button" onclick="showMembershipPopup('resident')" class="btn-buy">Apply Now</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="pricing-item">
-              <span class="recommended-badge">Competitive</span>
-              <h3>Varsity Member</h3>
-              <h4>Elite</h4>
-              <div class="price">Free</div>
-              <ul>
-                <li>All Resident Member benefits</li>
-                <li>Compete in off-campus tournaments</li>
-                <li>Represent Adamson University officially</li>
-                <li>Advanced training and coaching</li>
-                <li>Renewed membership at start of semester</li>
-              </ul>
-              <div class="btn-wrap">
-                <button type="button" onclick="showMembershipPopup('varsity')" class="btn-buy">Apply Now</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="pricing-item">
-              <span class="recommended-badge leadership-badge">Leadership</span>
-              <h3>Officer Member</h3>
-              <h4>Executive</h4>
-              <div class="price">By Election</div>
-              <ul>
-                <li>All Varsity Member benefits</li>
-                <li>Executive committee voting rights</li>
-                <li>Organizational management responsibilities</li>
-                <li>Event planning and coordination authority</li>
-                <li>Budget and resource allocation oversight</li>
-                <li>Mentorship of junior members</li>
-              </ul>
-              <div class="btn-wrap">
-                <button type="button" onclick="showMembershipPopup('officer')" class="btn-buy">Learn More</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <section id="faq" class="faq section">
-
-      <div class="container">
-
-        <div class="content text-center" data-aos="fade-up" data-aos-delay="100">
-          <h3><span>Frequently Asked </span><strong>Questions</strong></h3>
-          <p>
-            Have questions about joining the Adamson Debate Society? Here are answers to some of the most common inquiries from prospective members.
-          </p>
-        </div>
-
-        <div class="faq-container" data-aos="fade-up" data-aos-delay="200">
-
-          <div class="faq-item faq-active">
-            <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Do I need prior debate experience to join?</h3>
-            <div class="faq-content">
-              <p>Absolutely not! The Adamson Debate Society welcomes members of all experience levels. We provide comprehensive training programs designed to help beginners develop their skills while also challenging experienced debaters to reach new heights.</p>
-            </div>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </div>
-
-          <div class="faq-item">
-            <i class="faq-icon bi bi-question-circle"></i>
-            <h3>What time commitment is required for membership?</h3>
-            <div class="faq-content">
-              <p>We understand that students have varying schedules. Regular members typically attend weekly training sessions (2 hours) and society events. Executive members may have additional responsibilities, but we work with your academic schedule to ensure balance.</p>
-            </div>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </div>
-
-          <div class="faq-item">
-            <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Are there opportunities for leadership roles?</h3>
-            <div class="faq-content">
-              <p>Yes! The society offers various leadership opportunities including executive committee positions, team captainships, event coordination roles, and mentorship programs. We believe in developing leadership skills alongside debate expertise to prepare our members for future success.</p>
-            </div>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </div>
-
-          <div class="faq-item">
-            <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Can I join the varsity team even if I register as a resident member?</h3>
-            <div class="faq-content">
-              <p>Yes! You can upgrade from resident member to varsity member based on your performance and commitment. We regularly evaluate members for varsity team opportunities, and dedicated resident members can advance to represent the university in official events and tournaments.</p>
-            </div>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </div>
-
-          <div class="faq-item">
-            <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Can I join the organization even if I don't plan to debate?</h3>
-            <div class="faq-content">
-              <p>Yes, the organization is open to all! We welcome members who are interested in public speaking, research, event organization, leadership development, and supporting our debate community. There are many ways to contribute beyond competitive debating.</p>
-            </div>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </div>
-
-          <div class="faq-item">
-            <i class="faq-icon bi bi-question-circle"></i>
-            <h3>Can I join the organization if I'm not from Adamson University?</h3>
-            <div class="faq-content">
-              <p>Yes, but there will be specific conditions that apply. We are currently developing guidelines for non-Adamson students. Please check back soon for detailed information about external membership requirements and procedures.</p>
-            </div>
-            <i class="faq-toggle bi bi-chevron-right"></i>
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
 
     <!-- Partners Section -->
     <section id="partners" class="partners section light-background">
@@ -635,18 +356,72 @@
 
   <div id="preloader"></div>
 
-  <!-- Membership Application Popup -->
-  <div id="membershipPopup" class="popup-overlay">
-    <div class="popup-content">
-      <div class="popup-header">
-        <h3 id="popupTitle">Membership Application</h3>
-        <button class="popup-close" onclick="closeMembershipPopup()">&times;</button>
+  <!-- Resource Library Windows -->
+  <div id="templateWindow" class="resource-window-overlay">
+    <div class="resource-window">
+      <div class="resource-window-header">
+        <h3><div class="resource-icon"><i class="bi bi-file-earmark-text"></i></div> Case Construction</h3>
+        <button type="button" class="window-close" data-window="template" aria-label="Close window">
+          <i class="bi bi-x"></i>
+        </button>
       </div>
-      <div class="popup-body">
-        <p id="popupMessage"></p>
+      <div class="resource-window-content">
+        <div class="loading-state" id="templateLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading case construction resources...</p>
+        </div>
+        <ul class="resource-list" id="templateList" style="display: none;"></ul>
+        <div class="empty-state" id="templateEmpty" style="display: none;">
+          <i class="bi bi-file-earmark-text"></i>
+          <h4>No Case Construction Resources Available</h4>
+          <p>Check back soon for new materials.</p>
+        </div>
       </div>
-      <div class="popup-footer">
-        <button class="popup-btn" onclick="continueMembershipApplication()">Continue</button>
+    </div>
+  </div>
+
+  <div id="theoryWindow" class="resource-window-overlay">
+    <div class="resource-window">
+      <div class="resource-window-header">
+        <h3><div class="resource-icon"><i class="bi bi-book"></i></div> Matter Loading</h3>
+        <button type="button" class="window-close" data-window="theory" aria-label="Close window">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="resource-window-content">
+        <div class="loading-state" id="theoryLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading matter loading resources...</p>
+        </div>
+        <ul class="resource-list" id="theoryList" style="display: none;"></ul>
+        <div class="empty-state" id="theoryEmpty" style="display: none;">
+          <i class="bi bi-book"></i>
+          <h4>No Matter Loading Resources Available</h4>
+          <p>Check back soon for new materials.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="analyticsWindow" class="resource-window-overlay">
+    <div class="resource-window">
+      <div class="resource-window-header">
+        <h3><div class="resource-icon"><i class="bi bi-bar-chart"></i></div> Adjudication</h3>
+        <button type="button" class="window-close" data-window="analytics" aria-label="Close window">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="resource-window-content">
+        <div class="loading-state" id="analyticsLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading adjudication resources...</p>
+        </div>
+        <ul class="resource-list" id="analyticsList" style="display: none;"></ul>
+        <div class="empty-state" id="analyticsEmpty" style="display: none;">
+          <i class="bi bi-bar-chart"></i>
+          <h4>No Adjudication Resources Available</h4>
+          <p>Check back soon for new materials.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -671,86 +446,7 @@
   <!-- Supabase Integration -->
   <script src="assets/js/supabase-integration.js"></script>
 
-  <!-- Membership Popup JavaScript -->
   <script>
-    let currentMembershipType = '';
-
-    function showMembershipPopup(membershipType) {
-      currentMembershipType = membershipType;
-      const popup = document.getElementById('membershipPopup');
-      const title = document.getElementById('popupTitle');
-      const message = document.getElementById('popupMessage');
-
-      if (membershipType === 'resident') {
-        title.textContent = 'Resident Member Application';
-        message.textContent = 'New members will only be accepted during Adamson SOAR. If SOAR has passed, you will be waitlisted.';
-      } else if (membershipType === 'varsity') {
-        title.textContent = 'Varsity Member Application';
-        message.textContent = 'To join varsity, you must have prior experience in debating and be willing to participate in a mock debate to enter.';
-      } else if (membershipType === 'officer') {
-        title.textContent = 'Officer Member Information';
-        message.textContent = 'Officer positions are elected annually by current members. You must be a Varsity member in good standing to be eligible for election to executive positions.';
-      }
-
-      popup.classList.add('show');
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
-
-    function closeMembershipPopup() {
-      const popup = document.getElementById('membershipPopup');
-      popup.classList.remove('show');
-      document.body.style.overflow = ''; // Restore scrolling
-    }
-
-    function continueMembershipApplication() {
-      // For now, show alert since Microsoft Form is not available yet
-      alert('Microsoft Form will be available soon. Please check back later!');
-      closeMembershipPopup();
-
-      // When Microsoft Form is ready, replace the alert with:
-      // window.open('YOUR_MICROSOFT_FORM_URL', '_blank');
-    }
-
-    // Close popup when clicking outside
-    document.getElementById('membershipPopup').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeMembershipPopup();
-      }
-    });
-
-    // Close popup with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeMembershipPopup();
-      }
-    });
-
-    // Mobile Mission & Vision Tab Switching
-    function switchMobileTab(tabName) {
-      // Remove active class from all buttons and panels
-      document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      document.querySelectorAll('.mobile-tab-panel').forEach(panel => {
-        panel.classList.remove('active');
-      });
-
-      // Add active class to clicked button
-      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-      // Show corresponding panel with smooth transition
-      const targetPanel = document.getElementById(`mobile-${tabName}-panel`);
-      targetPanel.classList.add('active');
-
-      // Add ripple effect to clicked button
-      const clickedBtn = document.querySelector(`[data-tab="${tabName}"]`);
-      clickedBtn.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        clickedBtn.style.transform = 'scale(1)';
-      }, 150);
-    }
-
-    // Initialize tabs on page load
     document.addEventListener('DOMContentLoaded', function() {
       const swiperElement = document.getElementById('partnersSwiper');
       if (!swiperElement) {
@@ -817,6 +513,217 @@
         }
         resumeAutoplay();
       });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const supabaseClient = window.supabaseClient || null;
+
+      const resourceWindows = {
+        template: document.getElementById('templateWindow'),
+        theory: document.getElementById('theoryWindow'),
+        analytics: document.getElementById('analyticsWindow')
+      };
+
+      const resourceNavLinks = document.querySelectorAll('.resource-modal-link');
+
+      resourceNavLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          const type = this.getAttribute('data-resource-type');
+          if (type && resourceWindows[type]) {
+            e.preventDefault();
+            showResourceWindow(type);
+          }
+        });
+      });
+
+      const hashMap = {
+        '#open-resource-template': 'template',
+        '#open-resource-theory': 'theory',
+        '#open-resource-analytics': 'analytics'
+      };
+      const initialType = hashMap[window.location.hash];
+      if (initialType && resourceWindows[initialType]) {
+        showResourceWindow(initialType);
+      }
+
+      document.querySelectorAll('.window-close').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const windowType = this.getAttribute('data-window');
+          hideResourceWindow(windowType);
+        });
+      });
+
+      Object.values(resourceWindows).forEach(windowEl => {
+        windowEl.addEventListener('click', function(e) {
+          if (e.target === windowEl) {
+            hideAllResourceWindows();
+          }
+        });
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          hideAllResourceWindows();
+        }
+      });
+
+      function showResourceWindow(type) {
+        const windowEl = resourceWindows[type];
+        if (windowEl) {
+          windowEl.classList.add('show');
+          document.body.style.overflow = 'hidden';
+          loadResourceData(type);
+        }
+      }
+
+      function hideResourceWindow(type) {
+        const windowEl = resourceWindows[type];
+        if (windowEl) {
+          windowEl.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      }
+
+      function hideAllResourceWindows() {
+        Object.keys(resourceWindows).forEach(type => hideResourceWindow(type));
+      }
+
+      async function loadResourceData(type) {
+        const loadingEl = document.getElementById(`${type}Loading`);
+        const listEl = document.getElementById(`${type}List`);
+        const emptyEl = document.getElementById(`${type}Empty`);
+
+        loadingEl.style.display = 'block';
+        listEl.style.display = 'none';
+        emptyEl.style.display = 'none';
+
+        if (!supabaseClient) {
+          console.error('Supabase client not available');
+          showEmptyState(type);
+          return;
+        }
+
+        try {
+          const tableName = `resource_${type}`;
+          const { data: resources, error } = await supabaseClient
+            .from(tableName)
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            console.error(`Error loading ${type} resources:`, error);
+            showEmptyState(type);
+            return;
+          }
+
+          if (!resources || resources.length === 0) {
+            showEmptyState(type);
+            return;
+          }
+
+          displayResourceList(type, resources);
+        } catch (error) {
+          console.error(`Error loading ${type} resources:`, error);
+          showEmptyState(type);
+        }
+      }
+
+      function showEmptyState(type) {
+        const loadingEl = document.getElementById(`${type}Loading`);
+        const listEl = document.getElementById(`${type}List`);
+        const emptyEl = document.getElementById(`${type}Empty`);
+
+        loadingEl.style.display = 'none';
+        listEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+      }
+
+      function displayResourceList(type, resources) {
+        const loadingEl = document.getElementById(`${type}Loading`);
+        const listEl = document.getElementById(`${type}List`);
+        const emptyEl = document.getElementById(`${type}Empty`);
+
+        loadingEl.style.display = 'none';
+        emptyEl.style.display = 'none';
+        listEl.style.display = 'block';
+
+        listEl.innerHTML = '';
+        resources.forEach(resource => {
+          const listItem = createResourceListItem(resource);
+          listEl.appendChild(listItem);
+        });
+      }
+
+      function createResourceListItem(resource) {
+        const li = document.createElement('li');
+        li.className = 'resource-item';
+
+        const fileTypeIcon = getFileTypeIcon(resource.file_type);
+        const tags = resource.tags || [];
+        const difficultyColor = getDifficultyColor(resource.difficulty_level);
+
+        li.innerHTML = `
+          <div class="resource-item-icon ${resource.file_type}">
+            ${fileTypeIcon}
+          </div>
+          <div class="resource-item-content">
+            <h4 class="resource-item-title">${resource.title}</h4>
+            <p class="resource-item-description">${resource.description || 'No description available.'}</p>
+            <div class="resource-item-meta">
+              <span><i class="bi bi-file-earmark"></i> ${resource.file_type ? resource.file_type.toUpperCase() : 'FILE'}</span>
+              ${resource.file_size ? `<span><i class="bi bi-hdd"></i> ${resource.file_size}</span>` : ''}
+              ${resource.estimated_time ? `<span><i class="bi bi-clock"></i> ${resource.estimated_time} min</span>` : ''}
+              ${resource.difficulty_level ? `<span style="color: ${difficultyColor};"><i class="bi bi-signal"></i> ${resource.difficulty_level}</span>` : ''}
+              ${resource.downloads_count ? `<span><i class="bi bi-download"></i> ${resource.downloads_count} downloads</span>` : ''}
+            </div>
+            ${tags.length > 0 ? `
+              <div class="resource-item-tags">
+                ${tags.map(tag => `<span class="resource-tag">${tag}</span>`).join('')}
+              </div>
+            ` : ''}
+            <div class="resource-item-actions">
+              <a href="${resource.file_url || '#'}" class="resource-btn" target="_blank" rel="noopener">
+                <i class="bi bi-eye"></i> View
+              </a>
+              ${resource.download_url ? `
+                <a href="${resource.download_url}" class="resource-btn secondary" target="_blank" rel="noopener">
+                  <i class="bi bi-download"></i> Download
+                </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+
+        return li;
+      }
+
+      function getFileTypeIcon(fileType) {
+        const icons = {
+          pdf: '<i class="bi bi-file-earmark-pdf"></i>',
+          doc: '<i class="bi bi-file-earmark-word"></i>',
+          docx: '<i class="bi bi-file-earmark-word"></i>',
+          xls: '<i class="bi bi-file-earmark-excel"></i>',
+          xlsx: '<i class="bi bi-file-earmark-excel"></i>',
+          ppt: '<i class="bi bi-file-earmark-ppt"></i>',
+          pptx: '<i class="bi bi-file-earmark-ppt"></i>',
+          link: '<i class="bi bi-link-45deg"></i>',
+          video: '<i class="bi bi-play-circle"></i>',
+          sheet: '<i class="bi bi-table"></i>'
+        };
+        return icons[fileType] || '<i class="bi bi-file-earmark"></i>';
+      }
+
+      function getDifficultyColor(level) {
+        const map = {
+          Beginner: '#22c55e',
+          Intermediate: '#f59e0b',
+          Advanced: '#ef4444'
+        };
+        return map[level] || '#6b7280';
+      }
     });
   </script>
 
