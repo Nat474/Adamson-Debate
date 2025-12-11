@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Publications - Adamson Debate Society</title>
+  <meta name="description" content="Read the latest stories, updates, and achievements from the Adamson Debate Society.">
+  <meta name="keywords" content="adamson debate society, publication, publications, news, events, debate tournaments, academic achievements">
+
+  <link href="assets/img/Adamson Debate Logo.jpg" rel="icon">
+  <link href="assets/img/Adamson Debate Logo.jpg" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <link href="assets/css/main.css" rel="stylesheet">
+  <style>
+    /* Align header font with index.html */
+    .publication-page,
+    .publication-page .header,
+    .publication-page .navmenu a,
+    .publication-page .logo .sitename {
+      font-family: 'Poppins', 'Roboto', 'Raleway', sans-serif;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--accent-color);
+      background: rgba(37, 99, 235, 0.12);
+      border-radius: 999px;
+    }
+
+    .news-hero {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.05));
+      padding: clamp(3.5rem, 6vw, 5rem) 0;
+    }
+
+    .news-hero-layout {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .news-hero-copy {
+      display: grid;
+      gap: 1rem;
+      max-width: 720px;
+    }
+
+    .news-hero-copy h1 {
+      font-size: clamp(2.2rem, 5vw, 3rem);
+      color: var(--heading-color);
+      margin: 0;
+    }
+
+    .news-hero-copy p {
+      margin: 0;
+      color: rgba(15, 23, 42, 0.72);
+      line-height: 1.7;
+    }
+
+    .news-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .news-hero-graphic {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .news-hero-logo {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 20px;
+      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .news-feature {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .featured-article {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 2rem);
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+    }
+
+    .featured-media img {
+      width: 100%;
+      height: clamp(240px, 40vw, 360px);
+      object-fit: cover;
+    }
+
+    .featured-copy {
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      display: grid;
+      gap: 1rem;
+    }
+
+    .featured-copy h2 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      color: var(--heading-color);
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: rgba(15, 23, 42, 0.6);
+    }
+
+    .news-feed {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .news-feed-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .pub-nav {
+      margin-top: 1.5rem;
+      background: #fff;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 999px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      position: sticky;
+      top: 82px;
+      z-index: 5;
+    }
+
+    .pub-nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      flex-wrap: wrap;
+    }
+
+    .pub-nav-list {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0;
+      margin: 0;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .tab-pill {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0.55rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: transparent;
+      color: rgba(15, 23, 42, 0.7);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tab-pill:hover {
+      color: var(--accent-color);
+      background: rgba(37, 99, 235, 0.08);
+      border-color: rgba(37, 99, 235, 0.15);
+    }
+
+    .tab-pill.active {
+      color: #fff;
+      background: linear-gradient(90deg, var(--accent-color), #1d4ed8);
+      border-color: transparent;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+    }
+
+    .pub-search {
+      min-width: 240px;
+      max-width: 320px;
+      flex: 0 0 auto;
+    }
+
+    .news-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .opinion-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .opinion-section .opinion-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .opinion-sections {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .news-card {
+      display: grid;
+      gap: 1.15rem;
+      background: #fff;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 18px;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .news-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 42px rgba(15, 23, 42, 0.14);
+    }
+
+    .news-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .news-card-body {
+      padding: 1.25rem 1.5rem 1.6rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .news-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-color);
+    }
+
+    .news-card-body h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--heading-color);
+    }
+
+    .news-card-body p {
+      margin: 0;
+      color: rgba(15, 23, 42, 0.7);
+    }
+
+    .news-meta {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      color: rgba(15, 23, 42, 0.55);
+    }
+
+    .events-board {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .events-columns {
+      display: grid;
+      gap: clamp(2rem, 4vw, 3rem);
+    }
+
+    .events-timeline {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .timeline-entry {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 1.2rem 1.4rem;
+      display: grid;
+      gap: 0.6rem;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .timeline-entry:hover {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(37, 99, 235, 0.3);
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .timeline-entry h3 {
+      color: #000;
+      margin: 0;
+      transition: color 0.2s ease;
+    }
+
+    .timeline-entry:hover h3 {
+      color: var(--accent-color);
+    }
+
+    .timeline-entry p {
+      color: #333;
+      margin: 0;
+    }
+
+    .timeline-entry span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-color);
+    }
+
+    .events-overview {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1.75rem;
+      display: grid;
+      gap: 1rem;
+      color: #fff;
+    }
+
+    .events-overview p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .events-overview ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+      font-size: 0.95rem;
+    }
+
+    .press-kit {
+      padding: clamp(3rem, 5vw, 4.5rem) 0;
+    }
+
+    .press-kit-grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .press-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1.5rem;
+      display: grid;
+      gap: 0.75rem;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+    }
+
+    .press-card h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--heading-color);
+    }
+
+    .press-card p {
+      margin: 0;
+      color: rgba(15, 23, 42, 0.7);
+    }
+
+    .press-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+
+    @media (min-width: 768px) {
+      .news-hero-layout {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        align-items: start;
+      }
+
+      .news-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+
+      .press-kit-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .news-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .featured-article {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: stretch;
+      }
+
+      .featured-media img {
+        height: 100%;
+      }
+    }
+  </style>
+
+</head>
+
+<body class="publication-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <img src="assets/img/Adamson Debate Logo.jpg" alt="Adamson Debate Society Logo" class="logo-img">
+        <h1 class="sitename">Adamson Debate Society</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html#hero">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#membership">Membership</a></li>
+          <li><a href="debate-guidelines.html">Debate Guidelines</a></li>
+          <li><a href="publication.html" class="active">Publication</a></li>
+          <li class="dropdown"><a href="resources.html"><span>Resources</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="resources.html#case-construction">Case Construction</a></li>
+              <li><a href="resources.html#matter-loading">Matter Loading</a></li>
+              <li><a href="resources.html#adjudication">Adjudication</a></li>
+              <li><a href="auds-constitution.html">AUDS Constitution</a></li>
+            </ul>
+          </li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+    <main class="main">
+
+    <section class="news-hero section light-background">
+      <div class="container">
+        <div class="news-hero-layout">
+          <div class="news-hero-copy" data-aos="fade-up">
+            <span class="eyebrow">Newsroom</span>
+            <h1>The Blue Pillar</h1>
+            <p>The Blue Pillar is the home of Adamsonian discourse—short reads, bold opinions, and fresh perspectives that bring debate closer to every student</p>
+          </div>
+          <div class="news-hero-graphic" data-aos="fade-up" data-aos-delay="150">
+            <img src="assets/img/Adamson Debate Logo.jpg" alt="Adamson Debate Society Logo" class="news-hero-logo">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="pub-nav" data-aos="fade-up">
+      <div class="container pub-nav-inner">
+        <ul class="pub-nav-list" id="categoryPills">
+          <li><span class="tab-pill active" data-category="All">All</span></li>
+          <li><span class="tab-pill" data-category="News">News</span></li>
+          <li><span class="tab-pill" data-category="Opinion">Opinion</span></li>
+          <li><span class="tab-pill" data-category="Feature">Feature</span></li>
+          <li><span class="tab-pill" data-category="Literary">Literary</span></li>
+          <li><span class="tab-pill" data-category="Standpoint">Standpoint</span></li>
+        </ul>
+        <div class="pub-search">
+          <input type="search" id="publicationSearch" class="form-control" placeholder="Search publications...">
+        </div>
+      </div>
+    </nav>
+
+    <section class="news-feed section" id="headlines">
+      <div class="container">
+        <div class="news-feed-header">
+          <h2 class="section-title mb-0 latest-heading" id="storiesHeading">LATEST STORIES</h2>
+        </div>
+        <div id="newsGrid" class="news-grid">
+          <!-- News articles will be loaded dynamically from Supabase -->
+          <div class="news-card" style="padding: 2rem; text-align: center; border: 2px dashed #e2e8f0;">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-newspaper"></i> Publications</span>
+              <h3>No Publications Available</h3>
+              <p>Check the admin panel to add publications and updates.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+
+  </main>
+
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container">
+      <div class="row gy-4">
+
+        <div class="col-lg-6">
+          <h3 class="sitename">Adamson Debate Society</h3>
+          <p>Fostering academic discourse and intellectual excellence through the power of reasoned argumentation and dialogue. Join us in building a legacy of critical thinking and eloquent expression.</p>
+
+          <div class="social-links-footer d-flex justify-content-center gap-3 mt-3">
+            <a href="https://www.facebook.com/AdamsonDebateSociety" target="_blank" class="social-link-enhanced facebook" title="Follow us on Facebook">
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/adamson_debatesociety?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link-enhanced instagram" title="Follow us on Instagram">
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://tiktok.com/@adamson_debatesociety" target="_blank" class="social-link-enhanced tiktok" title="Follow us on TikTok">
+              <i class="bi bi-tiktok"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Contact Information</h4>
+          <div class="footer-contact">
+            <p><i class="bi bi-geo-alt"></i> Adamson University, 900 San Marcelino Street, Ermita, Manila, Philippines</p>
+            <p><i class="bi bi-telephone"></i> +63 2 524 2011</p>
+            <p><i class="bi bi-envelope"></i> <a href="mailto:auds@adamson.edu.ph">auds@adamson.edu.ph</a></p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="container mt-4">
+        <div class="copyright text-center">
+          <span>Copyright</span> <strong class="px-1 sitename">Adamson Debate Society</strong> <span>All Rights Reserved</span>
+        </div>
+        <div class="credits text-center">
+          A premier student organization of Adamson University committed to academic excellence and intellectual growth.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <div id="preloader"></div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <script src="assets/js/main.js"></script>
+
+  <script src="config/supabase.js"></script>
+
+  <!-- Publications Supabase loader -->
+  <script>
+    (function () {
+      const supabaseClient = window.supabaseClient || null;
+      let publications = [];
+      let currentCategory = 'all';
+      let currentSearch = '';
+
+      const displayCategory = (cat) => {
+        const norm = normalizeCategory(cat);
+        const labels = {
+          news: 'News',
+          opinion: 'Opinion',
+          feature: 'Feature',
+          literary: 'Literary',
+          standpoint: 'Standpoint'
+        };
+        return labels[norm] || (cat || 'Publication');
+      };
+
+      function normalizeCategory(cat) {
+        const c = (cat || '').toLowerCase();
+        if (c.startsWith('column') || c.startsWith('editorial')) return 'opinion';
+        if (c === 'features' || c === 'feature') return 'feature';
+        if (c === 'literary') return 'literary';
+        if (c === 'standpoint') return 'standpoint';
+        if (c === 'news') return 'news';
+        return c || 'publication';
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        if (!supabaseClient) {
+          console.error('Supabase client not initialized for publication page');
+          return;
+        }
+        bindFilters();
+        await loadPublications();
+      });
+
+      function bindFilters() {
+        const pills = document.querySelectorAll('#categoryPills .tab-pill');
+        pills.forEach(pill => {
+          pill.addEventListener('click', () => {
+            pills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentCategory = (pill.dataset.category || 'All').toLowerCase();
+            renderGrid();
+          });
+        });
+        const searchInput = document.getElementById('publicationSearch');
+        if (searchInput) {
+          searchInput.addEventListener('input', () => {
+            currentSearch = searchInput.value.toLowerCase();
+            renderGrid();
+          });
+        }
+      }
+
+      async function loadPublications() {
+        try {
+          const { data, error } = await supabaseClient
+            .from('blogs')
+            .select('*')
+            .order('published_at', { ascending: false });
+          if (error) throw error;
+          publications = data || [];
+          renderGrid();
+        } catch (err) {
+          console.error('Error loading publications:', err);
+        }
+      }
+
+      function renderGrid() {
+        const grid = document.getElementById('newsGrid');
+        if (!grid) return;
+        const heading = document.getElementById('storiesHeading');
+        if (heading) {
+          const titles = {
+            all: 'Latest Stories',
+            news: 'News',
+            opinion: 'Opinion',
+            feature: 'Feature Stories',
+            literary: 'Literary',
+            standpoint: 'Standpoint'
+          };
+          heading.textContent = titles[currentCategory] || 'Latest Stories';
+        }
+        grid.innerHTML = '';
+
+        // Special rendering for Opinion: separate Editorial and Column
+        if (currentCategory === 'opinion') {
+          const matchesOpinion = (p) => normalizeCategory(p.category) === 'opinion';
+          const matchesSearch = (p) => !currentSearch || `${p.title || ''} ${p.description || ''} ${p.body || ''}`.toLowerCase().includes(currentSearch);
+          const opinionArticles = publications.filter(p => matchesOpinion(p) && matchesSearch(p));
+          const editorials = opinionArticles.filter(p => (p.category || '').toLowerCase().startsWith('editorial'));
+          const columns = opinionArticles.filter(p => (p.category || '').toLowerCase().startsWith('column'));
+
+          const buildCard = (article, tagLabel) => {
+            const published = article.published_at ? new Date(article.published_at).toLocaleDateString() : 'No date';
+            const minutes = article.minutes_to_read ? `${article.minutes_to_read} min read` : '';
+            return `
+              <div class="news-card">
+                <img src="${article.photo || article.image_url || 'assets/img/blog/blog-placeholder.jpg'}" alt="${article.title || 'Publication'}">
+                <div class="news-card-body">
+                  <span class="news-tag"><i class="bi bi-journal-text"></i> ${tagLabel}</span>
+                  <h3>${article.title || 'Untitled Publication'}</h3>
+                  <div class="news-meta">
+                    <span><i class="bi bi-person"></i> ${article.author || 'Adamson Debate Society'}</span>
+                    <span><i class="bi bi-calendar"></i> ${published}</span>
+                    ${minutes ? `<span><i class="bi bi-clock"></i> ${minutes}</span>` : ''}
+                  </div>
+                  <p>${article.description || (article.body ? `${article.body.slice(0, 150)}...` : 'Read more inside.')}</p>
+                </div>
+              </div>
+            `;
+          };
+
+          const sectionMarkup = (title, items, tagLabel) => {
+            if (!items.length) {
+              return `
+                <div class="opinion-section">
+                  <h3 class="section-subtitle">${title}</h3>
+                  <div class="news-card" style="padding: 1.5rem; text-align: center; border: 2px dashed #e2e8f0;">
+                    <div class="news-card-body">
+                      <span class="news-tag"><i class="bi bi-journal-text"></i> ${tagLabel}</span>
+                      <h4>No ${title} articles yet</h4>
+                      <p>Check back soon for new pieces.</p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+            return `
+              <div class="opinion-section">
+                <h3 class="section-subtitle">${title}</h3>
+                <div class="news-grid opinion-grid">
+                  ${items.map(article => buildCard(article, tagLabel)).join('')}
+                </div>
+              </div>
+            `;
+          };
+
+          grid.innerHTML = `
+            <div class="opinion-sections">
+              ${sectionMarkup('Editorial', editorials, 'Editorial')}
+              ${sectionMarkup('Column', columns, 'Column')}
+            </div>
+          `;
+          return;
+        }
+
+        const filtered = publications.filter(p => {
+          const normCat = normalizeCategory(p.category);
+          const catMatch = currentCategory === 'all' || normCat === currentCategory;
+          const searchMatch = !currentSearch || `${p.title || ''} ${p.description || ''} ${p.body || ''}`.toLowerCase().includes(currentSearch);
+          return catMatch && searchMatch;
+        });
+        if (!filtered.length) {
+          const catLabel = currentCategory === 'all' ? 'All' : displayCategory(currentCategory);
+          grid.innerHTML = `
+            <div class="news-card" style="padding: 2rem; text-align: center; border: 2px dashed #e2e8f0;">
+              <div class="news-card-body">
+                <span class="news-tag"><i class="bi bi-journal-text"></i> ${catLabel}</span>
+                <h3>No Publications Available</h3>
+                <p>Check back soon for new articles.</p>
+              </div>
+            </div>`;
+          return;
+        }
+        filtered.forEach(article => {
+          const card = document.createElement('div');
+          card.className = 'news-card';
+          const published = article.published_at ? new Date(article.published_at).toLocaleDateString() : 'No date';
+          const catLabel = displayCategory(article.category);
+          const minutes = article.minutes_to_read ? `${article.minutes_to_read} min read` : '';
+          card.innerHTML = `
+            <img src="${article.photo || article.image_url || 'assets/img/blog/blog-placeholder.jpg'}" alt="${article.title || 'Publication'}">
+            <div class="news-card-body">
+              <span class="news-tag"><i class="bi bi-journal-text"></i> ${catLabel}</span>
+              <h3>${article.title || 'Untitled Publication'}</h3>
+              <div class="news-meta">
+                <span><i class="bi bi-person"></i> ${article.author || 'Adamson Debate Society'}</span>
+                <span><i class="bi bi-calendar"></i> ${published}</span>
+                ${minutes ? `<span><i class="bi bi-clock"></i> ${minutes}</span>` : ''}
+              </div>
+              <p>${article.description || (article.body ? `${article.body.slice(0, 150)}...` : 'Read more inside.')}</p>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+    })();
+  </script>
+
+
+</body>
+
+</html>
+
+

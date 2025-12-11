@@ -92,7 +92,7 @@ Adamson-Debate/
 ├── config/
 │   └── supabase.js       # Supabase configuration
 ├── index.html            # Homepage
-├── blog.html             # Blog page
+├── publication.html      # Publication page
 ├── debate-guidelines.html # Debate Guidelines
 ├── auds-constitution.html # Organization Constitution
 ├── admin.html            # Admin dashboard

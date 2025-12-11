@@ -319,7 +319,7 @@
                 <ul class="nav nav-pills justify-content-center" id="adminTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="blog-tab" data-bs-toggle="pill" data-bs-target="#blog" type="button" data-tab="blog">
-                            <i class="bi bi-journal-text"></i> Blog
+                            <i class="bi bi-journal-text"></i> Publication
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -343,13 +343,13 @@
 
         <!-- Tab Content -->
         <div class="tab-content" id="adminTabContent">
-            <!-- Blog Tab -->
+            <!-- Publication Tab -->
             <div class="tab-pane fade show active" id="blog" role="tabpanel">
                 <div class="admin-card">
                     <div class="card-header d-flex justify-content-between align-items-center px-4">
-                        <h5 class="mb-0"><i class="bi bi-journal-text"></i> Blog Management</h5>
+                        <h5 class="mb-0"><i class="bi bi-journal-text"></i> Publication Management</h5>
                         <button class="btn btn-primary" onclick="showBlogForm()">
-                            <i class="bi bi-plus-lg"></i> Add Blog Post
+                            <i class="bi bi-plus-lg"></i> Add Publication
                         </button>
                     </div>
                     <div class="card-body">
@@ -370,7 +370,7 @@
                                             <div class="spinner-border text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
-                                            <p class="mt-2 mb-0">Loading blog posts...</p>
+                                            <p class="mt-2 mb-0">Loading publications...</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -430,13 +430,14 @@
                                 <thead>
                                     <tr>
                                         <th>Title</th>
+                                        <th>Category</th>
                                         <th>Document</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="resourcesTable">
                                     <tr>
-                                        <td colspan="3" class="text-center">
+                                        <td colspan="4" class="text-center">
                                             <div class="spinner-border text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
@@ -595,12 +596,12 @@
         </div>
     </div>
 
-    <!-- Blog Modal -->
+    <!-- Publication Modal -->
     <div class="modal fade" id="blogModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="blogModalTitle">Add Blog Post</h5>
+                    <h5 class="modal-title" id="blogModalTitle">Add Publication</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -615,7 +616,15 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Category</label>
-                                    <input type="text" class="form-control" id="blogCategory" placeholder="Debate, Announcement..." required>
+                                    <select class="form-select" id="blogCategory" required>
+                                        <option value="">Select category</option>
+                                        <option value="News">News</option>
+                                        <option value="Column">Column</option>
+                                        <option value="Editorial">Editorial</option>
+                                        <option value="Feature">Feature</option>
+                                        <option value="Literary">Literary</option>
+                                        <option value="Standpoint">Standpoint</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -754,6 +763,19 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" id="resourceCategory" required>
+                                        <option value="">Select category</option>
+                                        <option value="Case Construction">Case Construction</option>
+                                        <option value="Matter Loading">Matter Loading</option>
+                                        <option value="Adjudication">Adjudication</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label">Document</label>
                                     <div class="input-group">

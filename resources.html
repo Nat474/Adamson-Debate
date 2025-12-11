@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Resources - Adamson Debate Society</title>
+  <meta name="description" content="Resource library for Case Construction, Matter Loading, and Adjudication.">
+
+  <link href="assets/img/Adamson Debate Logo.jpg" rel="icon">
+  <link href="assets/img/Adamson Debate Logo.jpg" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <link href="assets/css/main.css" rel="stylesheet">
+  <style>
+    .resources-page .header {
+      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    }
+    .resources-page .main {
+      padding-top: 120px;
+      background: linear-gradient(180deg, #f8fbff 0%, #f6f7fb 40%, #ffffff 100%);
+    }
+    .resource-toolbar {
+      position: relative;
+      margin-top: 0;
+      margin-bottom: 18px;
+      padding: 18px;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 16px;
+      box-shadow: 0 20px 55px rgba(15, 23, 42, 0.08);
+      display: grid;
+      gap: 12px;
+    }
+    .resource-chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .resource-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .resource-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+    .resource-chip .bi {
+      color: #2563eb;
+    }
+    .resource-search {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .resource-search input {
+      flex: 1;
+      min-width: 240px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      padding: 10px 12px;
+    }
+    .resource-section {
+      padding: 28px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 20px 55px rgba(15, 23, 42, 0.06);
+      margin-bottom: 26px;
+    }
+    .resource-section .section-title h2 {
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    .resource-section .section-title p {
+      color: #475569;
+      margin: 0;
+    }
+    .resource-card {
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 14px;
+      padding: 18px;
+      background: linear-gradient(180deg, #fff, #f9fbff);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .resource-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    }
+    .resource-card-body h4 {
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .resource-card-text {
+      color: #475569;
+      margin-bottom: 14px;
+    }
+    .resource-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+    .resource-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+    }
+    .resource-card .badge {
+      font-weight: 700;
+      padding: 0.4rem 0.65rem;
+      border-radius: 999px;
+    }
+    .resource-card .btn {
+      border-radius: 10px;
+    }
+    .loading-state, .empty-state {
+      text-align: center;
+      color: #475569;
+      padding: 18px 8px;
+    }
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      margin: 0 auto 12px auto;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @media (max-width: 991px) {
+      .resource-toolbar { margin-top: 0; }
+    }
+  </style>
+</head>
+
+<body class="resources-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <img src="assets/img/Adamson Debate Logo.jpg" alt="Adamson Debate Society Logo" class="logo-img">
+        <h1 class="sitename">Adamson Debate Society</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#membership">Membership</a></li>
+          <li><a href="debate-guidelines.html">Debate Guidelines</a></li>
+          <li><a href="publication.html">Publication</a></li>
+          <li class="dropdown"><a href="resources.html" class="active"><span>Resources</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#case-construction">Case Construction</a></li>
+              <li><a href="#matter-loading">Matter Loading</a></li>
+              <li><a href="#adjudication">Adjudication</a></li>
+              <li><a href="auds-constitution.html">AUDS Constitution</a></li>
+            </ul>
+          </li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <section id="resources" class="section">
+      <div class="container">
+        <div class="row g-4" id="resourceSections">
+          <!-- Sections will render here -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container">
+      <div class="row gy-4">
+
+        <div class="col-lg-6">
+          <h3 class="sitename">Adamson Debate Society</h3>
+          <p>Fostering academic discourse and intellectual excellence through the power of reasoned argumentation and dialogue. Join us in building a legacy of critical thinking and eloquent expression.</p>
+
+          <div class="social-links-footer d-flex justify-content-center gap-3 mt-3">
+            <a href="https://www.facebook.com/AdamsonDebateSociety" target="_blank" class="social-link-enhanced facebook" title="Follow us on Facebook">
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/adamson_debatesociety?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link-enhanced instagram" title="Follow us on Instagram">
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://tiktok.com/@adamson_debatesociety" target="_blank" class="social-link-enhanced tiktok" title="Follow us on TikTok">
+              <i class="bi bi-tiktok"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Contact Information</h4>
+          <div class="footer-contact">
+            <p><i class="bi bi-geo-alt"></i> Adamson University, 900 San Marcelino Street, Ermita, Manila, Philippines</p>
+            <p><i class="bi bi-telephone"></i> +63 2 524 2011</p>
+            <p><i class="bi bi-envelope"></i> <a href="mailto:auds@adamson.edu.ph">auds@adamson.edu.ph</a></p>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="container mt-4">
+        <div class="copyright text-center">
+          <span>Copyright</span> <strong class="px-1 sitename">Adamson Debate Society</strong> <span>All Rights Reserved</span>
+        </div>
+        <div class="credits text-center">
+          A premier student organization of Adamson University committed to academic excellence and intellectual growth.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <div id="preloader"></div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script src="config/supabase.js"></script>
+
+  <script>
+    const categoryVisuals = {
+      'Case Construction': { color: '#2563eb', icon: 'bi-pencil-square' },
+      'Matter Loading': { color: '#16a34a', icon: 'bi-book' },
+      'Adjudication': { color: '#f97316', icon: 'bi-shield-check' }
+    };
+    let currentSearch = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const categories = [
+        { key: 'case-construction', title: 'Case Construction', blurb: 'Templates, briefs, and primers for case building.', category: 'Case Construction' },
+        { key: 'matter-loading', title: 'Matter Loading', blurb: 'Research packs and theory notes to strengthen matter.', category: 'Matter Loading' },
+        { key: 'adjudication', title: 'Adjudication', blurb: 'Guides and materials for judging and feedback.', category: 'Adjudication' }
+      ];
+
+      const container = document.getElementById('resourceSections');
+      if (!container) return;
+
+      categories.forEach(cat => {
+        const col = document.createElement('div');
+        col.className = 'col-12';
+        col.innerHTML = `
+          <div class="resource-section" id="${cat.key}">
+            <div class="section-title" data-aos="fade-up">
+              <h2>${cat.title}</h2>
+              <p>${cat.blurb}</p>
+            </div>
+            <div class="resource-block" data-key="${cat.key}">
+              <div class="loading-state" id="${cat.key}-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading resources...</p>
+              </div>
+              <div class="row gy-4" id="${cat.key}-list" style="display:none;"></div>
+              <div class="empty-state" id="${cat.key}-empty" style="display:none;">
+                <i class="bi bi-folder"></i>
+                <h4>No resources available</h4>
+                <p>Check back soon for new materials.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+
+      if (typeof supabaseClient === 'undefined') {
+        console.error('Supabase client not initialized');
+        showAllEmptyStates(categories);
+        return;
+      }
+
+      for (const cat of categories) {
+        await loadCategory(cat);
+      }
+    });
+
+    async function loadCategory(cat) {
+      const loadingEl = document.getElementById(`${cat.key}-loading`);
+      const listEl = document.getElementById(`${cat.key}-list`);
+      const emptyEl = document.getElementById(`${cat.key}-empty`);
+      if (!loadingEl || !listEl || !emptyEl) return;
+
+      loadingEl.style.display = 'block';
+      listEl.style.display = 'none';
+      emptyEl.style.display = 'none';
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('resources')
+          .select('*')
+          .eq('category', cat.category)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        if (!data || !data.length) {
+          loadingEl.style.display = 'none';
+          emptyEl.style.display = 'block';
+          return;
+        }
+
+        listEl.innerHTML = '';
+        data.forEach(item => listEl.appendChild(createResourceCard(item)));
+
+        loadingEl.style.display = 'none';
+        listEl.style.display = 'flex';
+        filterResources(currentSearch);
+      } catch (err) {
+        console.error(`Error loading ${cat.category} resources:`, err);
+        loadingEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+      }
+    }
+
+    function createResourceCard(resource) {
+      const col = document.createElement('div');
+      col.className = 'col-lg-4 col-md-6 resource-card-col';
+
+      const linkUrl = resource.document_url || resource.fileUrl || resource.url || '#';
+      const safeTitle = resource.title || 'Untitled resource';
+      const safeDescription = resource.description || 'No description available.';
+      const visuals = categoryVisuals[resource.category] || { color: '#0f172a', icon: 'bi-folder2-open' };
+      const created = resource.created_at ? new Date(resource.created_at).toLocaleDateString() : '';
+      col.dataset.search = `${safeTitle} ${safeDescription}`.toLowerCase();
+
+      col.innerHTML = `
+        <div class="resource-card h-100 d-flex flex-column" style="--accent:${visuals.color}">
+          <div class="resource-card-body">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge" style="background:${visuals.color}1a;color:${visuals.color};"><i class="bi ${visuals.icon}"></i> ${resource.category || 'Resource'}</span>
+              ${created ? `<span class="text-muted small">${created}</span>` : ''}
+            </div>
+            <h4 class="resource-card-title">${safeTitle}</h4>
+            <p class="resource-card-text">${safeDescription}</p>
+            <div class="resource-meta">
+              ${resource.category ? `<span><i class="bi ${visuals.icon}"></i> ${resource.category}</span>` : ''}
+              ${resource.difficulty_level ? `<span><i class="bi bi-signal"></i> ${resource.difficulty_level}</span>` : ''}
+            </div>
+          </div>
+          <div class="mt-auto">
+            <a class="btn btn-primary w-100" href="${linkUrl}" target="_blank" rel="noopener">
+              <i class="bi bi-box-arrow-up-right"></i> Open Resource
+            </a>
+          </div>
+        </div>
+      `;
+
+      return col;
+    }
+
+    function showAllEmptyStates(categories) {
+      categories.forEach(cat => {
+        const loadingEl = document.getElementById(`${cat.key}-loading`);
+        const listEl = document.getElementById(`${cat.key}-list`);
+        const emptyEl = document.getElementById(`${cat.key}-empty`);
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (listEl) listEl.style.display = 'none';
+        if (emptyEl) emptyEl.style.display = 'block';
+      });
+    }
+  </script>
+
+</body>
+
+</html>

@@ -745,8 +745,8 @@ class AdminPanel {
             this.blogs = data || [];
             this.renderBlogTable(this.blogs);
         } catch (error) {
-            console.error('Error loading blogs:', error);
-            this.showToast('Failed to load blogs', 'error');
+            console.error('Error loading publications:', error);
+            this.showToast('Failed to load publications', 'error');
             this.renderBlogTable([]);
         }
     }
@@ -769,12 +769,24 @@ class AdminPanel {
             const blog = this.blogs.find(b => b.id === id);
             if (blog) {
                 document.getElementById('blogTitle').value = blog.title || '';
-                document.getElementById('blogCategory').value = blog.category || '';
+                const categoryEl = document.getElementById('blogCategory');
+                if (categoryEl) {
+                    const { category } = blog;
+                    if (category && !Array.from(categoryEl.options).some(opt => opt.value === category)) {
+                        const opt = document.createElement('option');
+                        opt.value = category;
+                        opt.textContent = category;
+                        categoryEl.appendChild(opt);
+                    }
+                    categoryEl.value = category || '';
+                }
                 document.getElementById('blogAuthor').value = blog.author || '';
                 document.getElementById('blogDate').value = blog.published_at ? blog.published_at.split('T')[0] : '';
                 document.getElementById('blogMinutesToRead').value = blog.minutes_to_read || '';
-                document.getElementById('blogRating').value = blog.rating || '';
-                document.getElementById('blogComments').value = blog.comments_count || '';
+                const ratingEl = document.getElementById('blogRating');
+                if (ratingEl) ratingEl.value = blog.rating || '';
+                const commentsEl = document.getElementById('blogComments');
+                if (commentsEl) commentsEl.value = blog.comments_count || '';
                 document.getElementById('blogDescription').value = blog.description || '';
                 document.getElementById('blogBody').value = blog.body || '';
                 document.getElementById('blogPhoto').value = blog.photo || '';
@@ -832,8 +844,8 @@ class AdminPanel {
             }
             await this.loadBlogs();
         } catch (error) {
-            console.error('Error saving blog:', error);
-            this.showToast('Failed to save blog', 'error');
+            console.error('Error saving publication:', error);
+            this.showToast('Failed to save publication', 'error');
         } finally {
             this.currentEditId = null;
             bootstrap.Modal.getInstance(document.getElementById('blogModal'))?.hide();
@@ -845,12 +857,24 @@ class AdminPanel {
         if (!blog) return;
         this.showBlogForm(id);
         document.getElementById('blogTitle').value = blog.title || '';
-        document.getElementById('blogCategory').value = blog.category || '';
+        const categoryEl = document.getElementById('blogCategory');
+        if (categoryEl) {
+            const { category } = blog;
+            if (category && !Array.from(categoryEl.options).some(opt => opt.value === category)) {
+                const opt = document.createElement('option');
+                opt.value = category;
+                opt.textContent = category;
+                categoryEl.appendChild(opt);
+            }
+            categoryEl.value = category || '';
+        }
         document.getElementById('blogAuthor').value = blog.author || '';
         document.getElementById('blogDate').value = blog.published_at ? blog.published_at.split('T')[0] : '';
         document.getElementById('blogMinutesToRead').value = blog.minutes_to_read || '';
-        document.getElementById('blogRating').value = blog.rating || '';
-        document.getElementById('blogComments').value = blog.comments_count || '';
+        const ratingEl = document.getElementById('blogRating');
+        if (ratingEl) ratingEl.value = blog.rating || '';
+        const commentsEl = document.getElementById('blogComments');
+        if (commentsEl) commentsEl.value = blog.comments_count || '';
         document.getElementById('blogDescription').value = blog.description || '';
         document.getElementById('blogBody').value = blog.body || '';
         document.getElementById('blogPhoto').value = blog.photo || '';
@@ -858,15 +882,15 @@ class AdminPanel {
     }
 
     async deleteBlog(id) {
-        if (!confirm('Delete this blog post?')) return;
+        if (!confirm('Delete this publication?')) return;
         try {
             const { error } = await this.getServiceClient().from('blogs').delete().eq('id', id);
             if (error) throw error;
             await this.loadBlogs();
             this.showToast('Blog deleted', 'success');
         } catch (error) {
-            console.error('Error deleting blog:', error);
-            this.showToast('Failed to delete blog', 'error');
+            console.error('Error deleting publication:', error);
+            this.showToast('Failed to delete publication', 'error');
         }
     }
 
@@ -877,7 +901,7 @@ class AdminPanel {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="5" class="text-center text-muted py-4">
-                        <i class="bi bi-journal-text"></i> No blog posts yet
+                        <i class="bi bi-journal-text"></i> No publications yet
                     </td>
                 </tr>
             `;
@@ -892,8 +916,8 @@ class AdminPanel {
                 <td>${item.author || '-'}</td>
                 <td>${item.published_at ? new Date(item.published_at).toLocaleDateString() : '-'}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editBlog('${item.id}')"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteBlog('${item.id}')"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="window.adminPanel.editBlog('${item.id}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="window.adminPanel.deleteBlog('${item.id}')"><i class="bi bi-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -1020,8 +1044,8 @@ class AdminPanel {
                 </td>
                 <td><a href="${item.link || '—'}" target="_blank">${item.link || '—'}</a></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editPartner('${item.id}')"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deletePartner('${item.id}')"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="window.adminPanel.editPartner('${item.id}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="window.adminPanel.deletePartner('${item.id}')"><i class="bi bi-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -1062,6 +1086,17 @@ class AdminPanel {
             const resource = this.resourcesData.find(r => r.id === id);
             if (resource) {
                 document.getElementById('resourceTitle').value = resource.title || '';
+                const categoryEl = document.getElementById('resourceCategory');
+                if (categoryEl) {
+                    const { category } = resource;
+                    if (category && !Array.from(categoryEl.options).some(opt => opt.value === category)) {
+                        const opt = document.createElement('option');
+                        opt.value = category;
+                        opt.textContent = category;
+                        categoryEl.appendChild(opt);
+                    }
+                    categoryEl.value = category || '';
+                }
                 document.getElementById('resourceFileUrl').value = resource.document_url || resource.fileUrl || '';
                 document.getElementById('resourceDescription').value = resource.description || '';
             }
@@ -1071,8 +1106,14 @@ class AdminPanel {
 
     async handleResourceSubmit(e) {
         if (e?.preventDefault) e.preventDefault();
+        const categoryEl = document.getElementById('resourceCategory');
+        if (!categoryEl) {
+            this.showToast('Resource form is missing the category field', 'error');
+            return;
+        }
         const payload = {
             title: document.getElementById('resourceTitle').value.trim(),
+            category: categoryEl.value.trim(),
             document_url: document.getElementById('resourceFileUrl').value.trim(),
             description: document.getElementById('resourceDescription').value.trim()
         };
@@ -1162,7 +1203,7 @@ class AdminPanel {
         if (!items.length) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="3" class="text-center text-muted py-4">
+                    <td colspan="4" class="text-center text-muted py-4">
                         <i class="bi bi-folder"></i> No resources yet
                     </td>
                 </tr>
@@ -1174,10 +1215,11 @@ class AdminPanel {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${item.title || ''}</td>
+                <td>${item.category || '-'}</td>
                 <td><a href="${item.document_url || item.fileUrl || '#'}" target="_blank">${item.document_url || item.fileUrl || '-'}</a></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="adminPanel.editResource('${item.id}')"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="adminPanel.deleteResource('${item.id}')"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="window.adminPanel.editResource('${item.id}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="window.adminPanel.deleteResource('${item.id}')"><i class="bi bi-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -1295,6 +1337,8 @@ class AdminPanel {
 let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {
     adminPanel = new AdminPanel();
+    // Expose instance globally for inline handlers
+    window.adminPanel = adminPanel;
 });
 
 // Global functions for onclick handlers
@@ -1329,15 +1373,6 @@ function showPartnerForm() {
 function showResourceForm() {
     adminPanel?.showResourceForm();
 }
-
-window.adminPanel = {
-    editBlog: (id) => adminPanel.editBlog(id),
-    deleteBlog: (id) => adminPanel.deleteBlog(id),
-    editPartner: (id) => adminPanel.editPartner(id),
-    deletePartner: (id) => adminPanel.deletePartner(id),
-    editResource: (id) => adminPanel.editResource(id),
-    deleteResource: (id) => adminPanel.deleteResource(id)
-};
 
 
 
